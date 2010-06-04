@@ -1,41 +1,47 @@
 package no.muda.jackbox;
 
-import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class MethodRecording {
 
-    public MethodRecording(Class<?> klass) {
-    }
+    private String methodName;
+    private List arguments;
+    private Object returnValue;
+    private Map<Class<?>, DependencyRecording> dependencyRecordings
+           = new HashMap<Class<?>, DependencyRecording>();
 
-    public void setMethodSignature(Method method) {
-    }
-
-    public void setReturnValue(int i) {
-    }
-
-    public void addParameter(int i) {
+    public MethodRecording(Class<?> klass, String methodName, List arguments) {
+        this.methodName = methodName;
+        this.arguments = arguments;
     }
 
     public String getMethodName() {
-        return null;
+        return methodName;
     }
 
     public Object getReturnValue() {
-        return 0;
+        return returnValue;
     }
 
-    public Object getParameter(int i) {
-        return null;
+    public void setReturnValue(Object returnValue) {
+        this.returnValue = returnValue;
     }
 
     public List getArguments() {
-        return null;
+        return arguments;
     }
 
     public DependencyRecording getDependencyRecording(Class<?> dependencyClass) {
-        return null;
+        return dependencyRecordings.get(dependencyClass);
+    }
+
+    public void addDependencyRecording(DependencyRecording dependencyRecording) {
+        this.dependencyRecordings.put(
+                dependencyRecording.getDependencyClass(),
+                dependencyRecording);
     }
 
 }

@@ -9,11 +9,6 @@ import org.junit.Test;
 public class JackboxRecordingTest {
 
     @Test
-    public void testPrintFuck() {
-        new Idiot().print("print print");
-    }
-
-    @Test
     public void shouldRecordMethodCall() throws Exception {
         ExampleRecordedObject recordedObject = new ExampleRecordedObject();
         int actualReturnedValue = recordedObject.exampleMethod(2, 3);

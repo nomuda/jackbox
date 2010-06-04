@@ -7,8 +7,8 @@ public class ExampleRecordedObject {
     private ExampleDependency exampleDependency;
 
     @Recording
-    public int exampleMethod(Object parameter, Object parameter2) {
-        return 0;
+    public int exampleMethod(int parameter, int parameter2) {
+        return parameter + parameter2;
     }
 
     public void setDependency(ExampleDependency exampleDependency) {
@@ -16,6 +16,7 @@ public class ExampleRecordedObject {
     }
 
     public void exampleMethodThatDelegatesToDependency(String argument) {
+        exampleDependency.invokedMethodOnDependency(argument);
     }
 
 }
