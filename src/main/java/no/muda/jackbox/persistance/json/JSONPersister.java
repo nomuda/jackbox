@@ -2,11 +2,14 @@ package no.muda.jackbox.persistance.json;
 
 import no.muda.jackbox.DependencyRecording;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 public class JSONPersister implements Persister {
-
 	public String persistToString(DependencyRecording recording) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+		Gson gson = new GsonBuilder().create();
+		String jsonString = gson.toJson(recording);
 
+		return jsonString;
+	}
 }
