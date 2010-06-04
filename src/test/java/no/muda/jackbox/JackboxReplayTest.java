@@ -4,6 +4,7 @@ import static org.fest.assertions.Assertions.assertThat;
 
 import java.util.Arrays;
 
+import no.muda.jackbox.example.ExampleDependency;
 import no.muda.jackbox.example.ExampleRecordedObject;
 
 import org.junit.Before;
@@ -44,6 +45,27 @@ public class JackboxReplayTest {
         }
 
         assertThat(threwException).describedAs("Should throw when return changes").isTrue();
+    }
+
+    @Test
+    public void shouldReplayDelegatedObject() throws Exception {
+        String recordedReturnValueFromDependencyMethod = "foo bar baz";
+
+        MethodRecording methodRecording = new MethodRecording(ExampleRecordedObject.class,
+                ExampleRecordedObject.class.getMethod("exampleMethodThatDelegatesToDependency", String.class),
+                Arrays.asList("abcd"));
+        methodRecording.setReturnValue(recordedReturnValueFromDependencyMethod);
+
+        MethodRecording dependencyMethodRecording = new MethodRecording(ExampleDependency.class,
+                ExampleDependency.class.getMethod("invokedMethodOnDependency", String.class),
+                Arrays.asList("abcd"));
+        dependencyMethodRecording.setReturnValue(recordedReturnValueFromDependencyMethod);
+
+        DependencyRecording dependencyRecording = new DependencyRecording(ExampleDependency.class);
+        dependencyRecording.addMethodRecording(dependencyMethodRecording);
+        methodRecording.addDependencyRecording(dependencyRecording);
+
+        methodRecording.replay();
     }
 
 

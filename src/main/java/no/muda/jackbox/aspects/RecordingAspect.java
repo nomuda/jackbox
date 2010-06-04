@@ -16,7 +16,9 @@ import org.aspectj.lang.reflect.MethodSignature;
 @Aspect
 public class RecordingAspect {
 
-    private ThreadLocal<MethodRecording> ongoingRecording = new ThreadLocal<MethodRecording>();
+    private static ThreadLocal<MethodRecording> ongoingRecording = new ThreadLocal<MethodRecording>();
+    private static boolean replayMode = false;
+    private static ThreadLocal<MethodRecording> methodRecording = new ThreadLocal<MethodRecording>();
 
     // TODO: Match with annotation on class or method, not just method
     @Around("    call(@no.muda.jackbox.annotations.Recording * *(..))")
@@ -39,6 +41,10 @@ public class RecordingAspect {
     // TODO: Match with annotation on class or method, not just method
     @Around("call(@no.muda.jackbox.annotations.Dependency * *(..))")
     public Object captureDependencies(ProceedingJoinPoint thisPointCut) throws Throwable {
+        if (replayMode) {
+            return capturedValue(thisPointCut);
+        }
+
         DependencyRecording dependencyRecording = new DependencyRecording(thisPointCut.getSignature().getDeclaringType());
         ongoingRecording.get().addDependencyRecording(dependencyRecording);
 
@@ -50,6 +56,13 @@ public class RecordingAspect {
         return result;
     }
 
+    private Object capturedValue(ProceedingJoinPoint thisPointCut) {
+        DependencyRecording dependencyRecording = methodRecording.get().getDependencyRecording(thisPointCut.getSignature().getDeclaringType());
+
+        MethodRecording dependencyMethodRecording = dependencyRecording.getMethodRecording(thisPointCut.getSignature().getName());
+        return dependencyMethodRecording.getRecordedResult();
+    }
+
     @SuppressWarnings("unchecked")
     private MethodRecording createMethodRecording(ProceedingJoinPoint thisPointCut) {
         Class targetClass = thisPointCut.getSignature().getDeclaringType();
@@ -58,5 +71,15 @@ public class RecordingAspect {
 
         List arguments = Arrays.asList(thisPointCut.getArgs());
         return new MethodRecording(targetClass, method, arguments);
+    }
+
+    public static void setReplayingRecording(MethodRecording methodRecording) {
+        RecordingAspect.methodRecording.set(methodRecording);
+        replayMode = true;
+    }
+
+    public static void clearReplayingRecording() {
+        RecordingAspect.methodRecording.set(null);
+        replayMode = false;
     }
 }

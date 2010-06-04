@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import no.muda.jackbox.aspects.RecordingAspect;
+
 
 @SuppressWarnings("unchecked")
 public class MethodRecording {
@@ -51,13 +53,19 @@ public class MethodRecording {
     public void replay() throws Exception {
         Object replayInstance = klass.newInstance();
 
+        RecordingAspect.setReplayingRecording(this);
         Object replayedResult = getMethod().invoke(replayInstance, arguments.toArray());
+        RecordingAspect.clearReplayingRecording();
 
-        if (!replayedResult.equals(getRecordedResult())) {
+        if (!nullSafeEquals(replayedResult, getRecordedResult())) {
             throw new AssertionError("When replaying " + getMethod()
                     + " expected <" + getRecordedResult() + "> got <" +
                     replayedResult + ">");
         }
+    }
+
+    private boolean nullSafeEquals(Object replayedResult, Object recordedResult) {
+        return replayedResult != null ? replayedResult.equals(recordedResult) : recordedResult == null;
     }
 
 }
