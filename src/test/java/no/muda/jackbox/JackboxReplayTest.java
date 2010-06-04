@@ -37,8 +37,8 @@ public class JackboxReplayTest {
             threwException = false;
         } catch (AssertionError e) {
             assertThat(e.getMessage())
-                .contains("<5>")
-                .contains("<4>")
+                .contains("expected <5>")
+                .contains("got <4>")
                 .contains("exampleMethod");
             threwException = true;
         }
