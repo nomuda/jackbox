@@ -1,6 +1,7 @@
 package no.muda.jackbox;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.junit.Assert.fail;
 import no.muda.jackbox.example.ExampleDependency;
 import no.muda.jackbox.example.ExampleRecordedObject;
 
@@ -55,5 +56,24 @@ public class JackboxRecordingTest {
         assertThat(dependentRecording.getArguments()).containsExactly(delegatedArgument);
         assertThat(dependentRecording.getRecordedResult())
             .isEqualTo("ABCD");
+    }
+
+    @Test
+    public void shouldFailWhenRecordingMethodCallsRecordingMethod() throws Exception {
+        ExampleRecordedObject recordedObject = new ExampleRecordedObject();
+
+        try {
+            recordedObject.callRecordingMethodInSameClass();
+            fail("Should get exception");
+        }
+        catch(IllegalStateException e) {
+            // Expected
+        }
+
+        MethodRecording recording = JackboxRecorder.getLastCompletedRecording();
+
+        DependencyRecording dependencyRecording = recording.getDependencyRecording(ExampleDependency.class);
+        MethodRecording dependentRecording =
+            dependencyRecording.getMethodRecording("callRecordingMethodInSameClass");
     }
 }
