@@ -15,6 +15,7 @@ public class ExampleRecordedObject {
         this.exampleDependency = exampleDependency;
     }
 
+    @Recording
     public void exampleMethodThatDelegatesToDependency(String argument) {
         exampleDependency.invokedMethodOnDependency(argument);
     }

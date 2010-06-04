@@ -38,6 +38,6 @@ public class JackboxRecordingTest {
 
         assertThat(dependentRecording.getArguments()).containsExactly(delegatedArgument);
         assertThat(dependentRecording.getReturnValue())
-            .isEqualTo(exampleDependency.invokedMethodOnDependency(delegatedArgument));
+            .isEqualTo("ABCD");
     }
 }
