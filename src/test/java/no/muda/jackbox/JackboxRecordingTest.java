@@ -4,9 +4,25 @@ import static org.fest.assertions.Assertions.assertThat;
 import no.muda.jackbox.example.ExampleDependency;
 import no.muda.jackbox.example.ExampleRecordedObject;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class JackboxRecordingTest {
+
+    private static ClassLoader originalClassLoader;
+
+    @BeforeClass
+    public static void setupClassloader() {
+        originalClassLoader = Thread.currentThread().getContextClassLoader();
+        // TODO: Runtime weaving!!!
+        //Thread.currentThread().setContextClassLoader(new RecordingClassLoader());
+    }
+
+    @AfterClass
+    public static void resetClassloader() {
+        Thread.currentThread().setContextClassLoader(originalClassLoader);
+    }
 
     @Test
     public void shouldRecordMethodCall() throws Exception {
