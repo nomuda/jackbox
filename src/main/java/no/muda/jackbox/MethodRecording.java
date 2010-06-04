@@ -3,12 +3,10 @@ package no.muda.jackbox;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import no.muda.jackbox.example.ExampleRecordedObject;
 
 public class MethodRecording {
 
-    public MethodRecording(Class<ExampleRecordedObject> class1) {
-        // TODO Auto-generated constructor stub
+    public MethodRecording(Class<?> klass) {
     }
 
     public void setMethodSignature(Method method) {
