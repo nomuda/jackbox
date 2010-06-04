@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import no.muda.jackbox.aspects.RecordingAspect;
-import no.muda.jackbox.example.ExampleDependency;
-
 
 @SuppressWarnings("unchecked")
 public class MethodRecording {
@@ -70,7 +68,8 @@ public class MethodRecording {
     }
 
     public void addDependencyMethodCall(MethodRecording dependencyMethodRecording) {
-        DependencyRecording dependencyRecording = new DependencyRecording(ExampleDependency.class);
+        Class<?> dependencyClass = dependencyMethodRecording.getMethod().getDeclaringClass();
+        DependencyRecording dependencyRecording = new DependencyRecording(dependencyClass);
         dependencyRecording.addMethodRecording(dependencyMethodRecording);
         addDependencyRecording(dependencyRecording);
     }
