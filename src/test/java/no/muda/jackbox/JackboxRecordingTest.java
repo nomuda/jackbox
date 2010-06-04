@@ -13,7 +13,7 @@ public class JackboxRecordingTest {
         ExampleRecordedObject recordedObject = new ExampleRecordedObject();
         int actualReturnedValue = recordedObject.exampleMethod(2, 3);
 
-        MethodRecording recording = JackboxRecorder.getLastRecording();
+        MethodRecording recording = JackboxRecorder.getLastCompletedRecording();
 
         assertThat(recording.getMethodName()).isEqualTo("exampleMethod");
         assertThat(recording.getArguments()).containsExactly(2, 3);
@@ -30,7 +30,7 @@ public class JackboxRecordingTest {
         String delegatedArgument = "abcd";
         recordedObject.exampleMethodThatDelegatesToDependency(delegatedArgument);
 
-        MethodRecording recording = JackboxRecorder.getLastRecording();
+        MethodRecording recording = JackboxRecorder.getLastCompletedRecording();
 
         DependencyRecording dependencyRecording = recording.getDependencyRecording(ExampleDependency.class);
         MethodRecording dependentRecording =

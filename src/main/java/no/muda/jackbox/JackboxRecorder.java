@@ -2,7 +2,7 @@ package no.muda.jackbox;
 
 public class JackboxRecorder {
 
-    public static MethodRecording getLastRecording() {
+    public static MethodRecording getLastCompletedRecording() {
         return null;
     }
 
