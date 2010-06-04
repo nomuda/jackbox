@@ -75,4 +75,9 @@ public class MethodRecording {
         addDependencyRecording(dependencyRecording);
     }
 
+    public MethodRecording getDependencyMethodRecording(Method dependentMethod) {
+        DependencyRecording dependencyRecording = dependencyRecordings.get(dependentMethod.getDeclaringClass());
+        return dependencyRecording.getMethodRecording(dependentMethod.getName());
+    }
+
 }

@@ -2,6 +2,9 @@ package no.muda.jackbox;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.fail;
+
+import java.lang.reflect.Method;
+
 import no.muda.jackbox.example.ExampleDependency;
 import no.muda.jackbox.example.ExampleRecordedObject;
 
@@ -49,9 +52,10 @@ public class JackboxRecordingTest {
 
         MethodRecording recording = JackboxRecorder.getLastCompletedRecording();
 
-        DependencyRecording dependencyRecording = recording.getDependencyRecording(ExampleDependency.class);
+
+        Method invokedMethodOnDependency = ExampleDependency.class.getMethod("invokedMethodOnDependency", String.class);
         MethodRecording dependentRecording =
-            dependencyRecording.getMethodRecording("invokedMethodOnDependency");
+            recording.getDependencyMethodRecording(invokedMethodOnDependency);
 
         assertThat(dependentRecording.getArguments()).containsExactly(delegatedArgument);
         assertThat(dependentRecording.getRecordedResult())

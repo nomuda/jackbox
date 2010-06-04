@@ -21,7 +21,7 @@ public class RecordingAspect {
     private static ThreadLocal<MethodRecording> methodRecording = new ThreadLocal<MethodRecording>();
 
     // TODO: Match with annotation on class or method, not just method
-    @Around("    call(@no.muda.jackbox.annotations.Recording * *(..))")
+    @Around("call(@no.muda.jackbox.annotations.Recording * *(..))")
     public Object captureRecordedClass(ProceedingJoinPoint thisPointCut) throws Throwable {
         MethodRecording recording = createMethodRecording(thisPointCut);
 
@@ -64,10 +64,15 @@ public class RecordingAspect {
     private MethodRecording createMethodRecording(ProceedingJoinPoint thisPointCut) {
         Class targetClass = thisPointCut.getSignature().getDeclaringType();
 
-        Method method = ((MethodSignature) thisPointCut.getSignature()).getMethod();
+        Method method = getMethod(thisPointCut);
 
         List arguments = Arrays.asList(thisPointCut.getArgs());
         return new MethodRecording(targetClass, method, arguments);
+    }
+
+    private Method getMethod(ProceedingJoinPoint thisPointCut) {
+        Method method = ((MethodSignature) thisPointCut.getSignature()).getMethod();
+        return method;
     }
 
     public static void setReplayingRecording(MethodRecording methodRecording) {
