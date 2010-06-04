@@ -1,22 +1,27 @@
 package no.muda.jackbox;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 
 public class DependencyRecording {
 
     private final Class<?> dependencyClass;
 
-    // TODO: Create test that forces Map<String, List<MethodRecording>>
-    private Map<String, MethodRecording> methodRecordings = new HashMap<String, MethodRecording>();
+    // TODO: Create test that forces Map<String, Queue<MethodRecording>>
+    private Map<Method, MethodRecording> methodRecordings = new HashMap<Method, MethodRecording>();
 
     public DependencyRecording(Class<?> dependencyClass) {
         this.dependencyClass = dependencyClass;
     }
 
     public MethodRecording getMethodRecording(String methodName) {
-        return methodRecordings.get(methodName);
+        for (Entry<Method, MethodRecording> entry : methodRecordings.entrySet()) {
+            if (entry.getKey().getName().equals(methodName)) return entry.getValue();
+        }
+        return null;
     }
 
     public Class<?> getDependencyClass() {
@@ -24,7 +29,7 @@ public class DependencyRecording {
     }
 
     public void addMethodRecording(MethodRecording methodRecording) {
-        methodRecordings.put(methodRecording.getMethodName(), methodRecording);
+        methodRecordings.put(methodRecording.getMethod(), methodRecording);
     }
 
 }

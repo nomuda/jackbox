@@ -1,5 +1,6 @@
 package no.muda.jackbox.aspects;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 
@@ -10,6 +11,7 @@ import no.muda.jackbox.MethodRecording;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.reflect.MethodSignature;
 
 @Aspect
 public class RecordingAspect {
@@ -51,8 +53,10 @@ public class RecordingAspect {
     @SuppressWarnings("unchecked")
     private MethodRecording createMethodRecording(ProceedingJoinPoint thisPointCut) {
         Class targetClass = thisPointCut.getSignature().getDeclaringType();
-        String methodName = thisPointCut.getSignature().getName();
+
+        Method method = ((MethodSignature) thisPointCut.getSignature()).getMethod();
+
         List arguments = Arrays.asList(thisPointCut.getArgs());
-        return new MethodRecording(targetClass, methodName, arguments);
+        return new MethodRecording(targetClass, method, arguments);
     }
 }

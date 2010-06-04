@@ -15,9 +15,9 @@ public class JackboxRecordingTest {
 
         MethodRecording recording = JackboxRecorder.getLastCompletedRecording();
 
-        assertThat(recording.getMethodName()).isEqualTo("exampleMethod");
+        assertThat(recording.getMethod().getName()).isEqualTo("exampleMethod");
         assertThat(recording.getArguments()).containsExactly(2, 3);
-        assertThat(recording.getReturnValue())
+        assertThat(recording.getRecordedResult())
             .isEqualTo(actualReturnedValue);
     }
 
@@ -37,7 +37,7 @@ public class JackboxRecordingTest {
             dependencyRecording.getMethodRecording("invokedMethodOnDependency");
 
         assertThat(dependentRecording.getArguments()).containsExactly(delegatedArgument);
-        assertThat(dependentRecording.getReturnValue())
+        assertThat(dependentRecording.getRecordedResult())
             .isEqualTo("ABCD");
     }
 }

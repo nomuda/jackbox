@@ -1,28 +1,32 @@
 package no.muda.jackbox;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 
+@SuppressWarnings("unchecked")
 public class MethodRecording {
 
-    private String methodName;
     private List arguments;
     private Object returnValue;
     private Map<Class<?>, DependencyRecording> dependencyRecordings
            = new HashMap<Class<?>, DependencyRecording>();
+    private final Class<?> klass;
+    private final Method method;
 
-    public MethodRecording(Class<?> klass, String methodName, List arguments) {
-        this.methodName = methodName;
+    public MethodRecording(Class<?> klass, Method method, List arguments) {
+        this.klass = klass;
+        this.method = method;
         this.arguments = arguments;
     }
 
-    public String getMethodName() {
-        return methodName;
+    public Method getMethod() {
+        return method;
     }
 
-    public Object getReturnValue() {
+    public Object getRecordedResult() {
         return returnValue;
     }
 
@@ -42,6 +46,18 @@ public class MethodRecording {
         this.dependencyRecordings.put(
                 dependencyRecording.getDependencyClass(),
                 dependencyRecording);
+    }
+
+    public void replay() throws Exception {
+        Object replayInstance = klass.newInstance();
+
+        Object replayedResult = getMethod().invoke(replayInstance, arguments.toArray());
+
+        if (!replayedResult.equals(getRecordedResult())) {
+            throw new AssertionError("When replaying " + getMethod()
+                    + " expected <" + getRecordedResult() + "> got <" +
+                    replayedResult + ">");
+        }
     }
 
 }
