@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import no.muda.jackbox.aspects.RecordingAspect;
+import no.muda.jackbox.example.ExampleDependency;
 
 
 @SuppressWarnings("unchecked")
@@ -44,7 +45,7 @@ public class MethodRecording {
         return dependencyRecordings.get(dependencyClass);
     }
 
-    public void addDependencyRecording(DependencyRecording dependencyRecording) {
+    private void addDependencyRecording(DependencyRecording dependencyRecording) {
         this.dependencyRecordings.put(
                 dependencyRecording.getDependencyClass(),
                 dependencyRecording);
@@ -66,6 +67,12 @@ public class MethodRecording {
 
     private boolean nullSafeEquals(Object replayedResult, Object recordedResult) {
         return replayedResult != null ? replayedResult.equals(recordedResult) : recordedResult == null;
+    }
+
+    public void addDependencyMethodCall(MethodRecording dependencyMethodRecording) {
+        DependencyRecording dependencyRecording = new DependencyRecording(ExampleDependency.class);
+        dependencyRecording.addMethodRecording(dependencyMethodRecording);
+        addDependencyRecording(dependencyRecording);
     }
 
 }

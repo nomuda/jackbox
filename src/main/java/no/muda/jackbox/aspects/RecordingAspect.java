@@ -45,11 +45,8 @@ public class RecordingAspect {
             return capturedValue(thisPointCut);
         }
 
-        DependencyRecording dependencyRecording = new DependencyRecording(thisPointCut.getSignature().getDeclaringType());
-        ongoingRecording.get().addDependencyRecording(dependencyRecording);
-
         MethodRecording methodRecording = createMethodRecording(thisPointCut);
-        dependencyRecording.addMethodRecording(methodRecording);
+        ongoingRecording.get().addDependencyMethodCall(methodRecording);
 
         Object result = thisPointCut.proceed();
         methodRecording.setReturnValue(result);

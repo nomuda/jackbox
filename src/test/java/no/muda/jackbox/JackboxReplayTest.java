@@ -60,10 +60,7 @@ public class JackboxReplayTest {
                 ExampleDependency.class.getMethod("invokedMethodOnDependency", String.class),
                 Arrays.asList("abcd"));
         dependencyMethodRecording.setReturnValue(recordedReturnValueFromDependencyMethod);
-
-        DependencyRecording dependencyRecording = new DependencyRecording(ExampleDependency.class);
-        dependencyRecording.addMethodRecording(dependencyMethodRecording);
-        methodRecording.addDependencyRecording(dependencyRecording);
+        methodRecording.addDependencyMethodCall(dependencyMethodRecording);
 
         methodRecording.replay();
     }
