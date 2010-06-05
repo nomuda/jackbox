@@ -24,6 +24,10 @@ public class DependencyRecording {
         return null;
     }
 
+    public Map<Method, MethodRecording> getMethodRecordings() {
+        return methodRecordings;
+    }
+
     public Class<?> getDependencyClass() {
         return dependencyClass;
     }
@@ -32,4 +36,7 @@ public class DependencyRecording {
         methodRecordings.put(methodRecording.getMethod(), methodRecording);
     }
 
+    public void setMethodRecordings(Map<Method, MethodRecording> recordings) {
+        methodRecordings = recordings;
+    }
 }
