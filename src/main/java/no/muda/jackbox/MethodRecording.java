@@ -79,4 +79,58 @@ public class MethodRecording {
         return dependencyRecording.getMethodRecording(dependentMethod.getName());
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((arguments == null) ? 0 : arguments.hashCode());
+        result = prime
+                * result
+                + ((dependencyRecordings == null) ? 0 : dependencyRecordings
+                        .hashCode());
+        result = prime * result + ((klass == null) ? 0 : klass.hashCode());
+        result = prime * result + ((method == null) ? 0 : method.hashCode());
+        result = prime * result
+                + ((returnValue == null) ? 0 : returnValue.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        MethodRecording other = (MethodRecording) obj;
+        if (arguments == null) {
+            if (other.arguments != null)
+                return false;
+        } else if (!arguments.equals(other.arguments))
+            return false;
+        if (dependencyRecordings == null) {
+            if (other.dependencyRecordings != null)
+                return false;
+        } else if (!dependencyRecordings.equals(other.dependencyRecordings))
+            return false;
+        if (klass == null) {
+            if (other.klass != null)
+                return false;
+        } else if (!klass.equals(other.klass))
+            return false;
+        if (method == null) {
+            if (other.method != null)
+                return false;
+        } else if (!method.equals(other.method))
+            return false;
+        if (returnValue == null) {
+            if (other.returnValue != null)
+                return false;
+        } else if (!returnValue.equals(other.returnValue))
+            return false;
+        return true;
+    }
+
 }
