@@ -43,7 +43,7 @@ public class MethodTypeAdapter implements JsonSerializer<Method>, JsonDeserializ
 		for (int i = 0; i < array.size(); i++) {
 			parameters.add( Class.forName(array.get(i).getAsString()) );
 		}
-		return (Class<?>[]) parameters.toArray();
+		return (Class<?>[]) parameters.toArray(new Class<?>[]{});
 	}
 
 	public Method deserialize(JsonElement element, Type typeOfSrc,
