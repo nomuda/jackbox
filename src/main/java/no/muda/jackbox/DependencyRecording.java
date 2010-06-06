@@ -73,4 +73,10 @@ public class DependencyRecording {
             return false;
         return true;
     }
+
+    @Override
+    public String toString() {
+        return "DependencyRecording [dependencyClass=" + dependencyClass
+                + ", methodRecordings=" + methodRecordings + "]";
+    }
 }

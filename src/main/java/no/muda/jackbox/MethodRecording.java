@@ -133,4 +133,12 @@ public class MethodRecording {
         return true;
     }
 
+    @Override
+    public String toString() {
+        return "MethodRecording [arguments=" + arguments
+                + ", dependencyRecordings=" + dependencyRecordings + ", klass="
+                + klass + ", method=" + method + ", returnValue=" + returnValue
+                + "]";
+    }
+
 }
