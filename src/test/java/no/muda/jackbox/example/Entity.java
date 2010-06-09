@@ -1,13 +1,13 @@
 package no.muda.jackbox.example;
 
-public class ExampleEntity {
+public class Entity {
 
     private String name;
 
-    ExampleEntity() {
+    Entity() {
     }
 
-    public ExampleEntity(String name) {
+    public Entity(String name) {
         this.name = name;
     }
 
@@ -17,8 +17,8 @@ public class ExampleEntity {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof ExampleEntity)) return false;
-        return ((ExampleEntity)obj).name.equals(this.name);
+        if (!(obj instanceof Entity)) return false;
+        return ((Entity)obj).name.equals(this.name);
     }
 
     @Override
@@ -28,7 +28,7 @@ public class ExampleEntity {
 
     @Override
     public String toString() {
-        return "ExampleEntity<" + name + ">";
+        return "Entity<" + name + ">";
     }
 }
 

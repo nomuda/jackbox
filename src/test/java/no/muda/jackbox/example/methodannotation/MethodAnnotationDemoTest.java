@@ -1,31 +1,31 @@
-package no.muda.jackbox;
+package no.muda.jackbox.example.methodannotation;
 
-import static org.fest.assertions.Assertions.assertThat;
+import no.muda.jackbox.JackboxRecorder;
+import no.muda.jackbox.MethodRecording;
+import no.muda.jackbox.persistance.json.JSONPersister;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-import no.muda.jackbox.example.demoapp.DemoApp;
-import no.muda.jackbox.persistance.json.JSONPersister;
+import static org.fest.assertions.Assertions.assertThat;
 
-import org.junit.Before;
-import org.junit.Test;
-
-public class FullExampleTest {
+public class MethodAnnotationDemoTest {
 
     private ByteArrayOutputStream sysout;
 
     @Test
     public void shouldCallDaoDuringRecording() throws Exception {
-        DemoApp.main(new String[0]);
-        assertThat(getSysout()).contains("DemoDao");
+        MethodAnnotationDemoApp.main(new String[0]);
+        assertThat(getSysout()).contains("MethodAnnotationDemoDao");
     }
 
     @Test
     public void shouldNotCallDaoDuringPlayback() throws Exception {
-        DemoApp.main(new String[0]);
+        MethodAnnotationDemoApp.main(new String[0]);
         MethodRecording recording = JackboxRecorder.getLastCompletedRecording();
 
         JSONPersister persister = new JSONPersister();
@@ -37,8 +37,8 @@ public class FullExampleTest {
 
         recording.replay();
         assertThat(getSysout())
-            .contains("DemoService")
-            .excludes("DemoDao");
+            .contains("MethodAnnotationDemoService")
+            .excludes("MethodAnnotationDemoDao");
     }
 
     private String getSysout() {

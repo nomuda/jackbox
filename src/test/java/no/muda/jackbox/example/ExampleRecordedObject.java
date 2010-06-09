@@ -20,7 +20,7 @@ public class ExampleRecordedObject {
         return exampleDependency.invokedMethodOnDependency(argument);
     }
 
-    public ExampleEntity methodWithEntity(ExampleEntity entity) {
+    public Entity methodWithEntity(Entity entity) {
         return entity;
     }
 }
