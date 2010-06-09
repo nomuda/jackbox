@@ -1,13 +1,13 @@
 package no.muda.jackbox;
 
+import no.muda.jackbox.aspects.JackboxAspect;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import no.muda.jackbox.aspects.RecordingAspect;
 
 public class MethodRecording {
 
@@ -57,9 +57,9 @@ public class MethodRecording {
     public void replay() throws Exception {
         Object replayInstance = targetClass.newInstance();
 
-        RecordingAspect.setReplayingRecording(this);
+        JackboxAspect.setReplayingRecording(this);
         Object replayedResult = getMethod().invoke(replayInstance, arguments);
-        RecordingAspect.clearReplayingRecording();
+        JackboxAspect.clearReplayingRecording();
 
         if (!nullSafeEquals(replayedResult, getRecordedResult())) {
             throw new AssertionError("When replaying " + getMethod()
