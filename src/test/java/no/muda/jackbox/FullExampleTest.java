@@ -10,17 +10,17 @@ import java.io.StringWriter;
 import no.muda.jackbox.example.demoapp.DemoApp;
 import no.muda.jackbox.persistance.json.JSONPersister;
 
+import org.junit.Before;
 import org.junit.Test;
 
 public class FullExampleTest {
 
+    private ByteArrayOutputStream sysout;
+
     @Test
     public void shouldCallDaoDuringRecording() throws Exception {
-        ByteArrayOutputStream sysout = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(sysout));
-
         DemoApp.main(new String[0]);
-        assertThat(new String(sysout.toByteArray())).contains("DemoDao");
+        assertThat(getSysout()).contains("DemoDao");
     }
 
     @Test
@@ -32,16 +32,23 @@ public class FullExampleTest {
         StringWriter serializedRecording = new StringWriter();
         persister.persistToWriter(recording, serializedRecording);
 
-        System.out.println(serializedRecording);
-
+        captureSysout();
         recording = persister.readFromReader(new StringReader(serializedRecording.toString()));
 
-        ByteArrayOutputStream sysout = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(sysout));
         recording.replay();
-        assertThat(new String(sysout.toByteArray()))
+        assertThat(getSysout())
             .contains("DemoService")
             .excludes("DemoDao");
+    }
+
+    private String getSysout() {
+        return new String(sysout.toByteArray());
+    }
+
+    @Before
+    public void captureSysout() {
+        sysout = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(sysout));
     }
 
 }
