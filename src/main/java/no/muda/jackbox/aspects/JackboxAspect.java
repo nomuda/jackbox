@@ -12,14 +12,14 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 
 @Aspect
-public class RecordingAspect {
+public class JackboxAspect {
 
     private static ThreadLocal<MethodRecording> ongoingRecording = new ThreadLocal<MethodRecording>();
     private static boolean replayMode = false;
     private static ThreadLocal<MethodRecording> methodRecording = new ThreadLocal<MethodRecording>();
 
-    // TODO: Match with annotation on class or method, not just method
-    @Around("call(@no.muda.jackbox.annotations.Recording * *(..))")
+    @Around("call(@no.muda.jackbox.annotations.Recording * *(..)) " +
+            "|| (execution(public * *(..)) && @within(no.muda.jackbox.annotations.Recording))")
     public Object captureRecordedClass(ProceedingJoinPoint thisPointCut) throws Throwable {
         MethodRecording recording = createMethodRecording(thisPointCut);
 
@@ -36,8 +36,8 @@ public class RecordingAspect {
         return result;
     }
 
-    // TODO: Match with annotation on class or method, not just method
-    @Around("call(@no.muda.jackbox.annotations.Dependency * *(..))")
+    @Around("call(@no.muda.jackbox.annotations.Dependency * *(..)) " +
+            "|| (execution(public * *(..)) && @within(no.muda.jackbox.annotations.Dependency))")
     public Object captureDependencies(ProceedingJoinPoint thisPointCut) throws Throwable {
         if (replayMode) {
             return capturedValue(thisPointCut);
@@ -74,12 +74,12 @@ public class RecordingAspect {
     }
 
     public static void setReplayingRecording(MethodRecording methodRecording) {
-        RecordingAspect.methodRecording.set(methodRecording);
+        JackboxAspect.methodRecording.set(methodRecording);
         replayMode = true;
     }
 
     public static void clearReplayingRecording() {
-        RecordingAspect.methodRecording.set(null);
+        JackboxAspect.methodRecording.set(null);
         replayMode = false;
     }
 }
