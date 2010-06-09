@@ -72,12 +72,7 @@ public class JackboxRecordingTest {
         }
         catch(IllegalStateException e) {
             // Expected
+            assertThat(e.getMessage()).contains("callRecordingMethodInSameClass");
         }
-
-        MethodRecording recording = JackboxRecorder.getLastCompletedRecording();
-
-        DependencyRecording dependencyRecording = recording.getDependencyRecording(ExampleDependency.class);
-        MethodRecording dependentRecording =
-            dependencyRecording.getMethodRecording("callRecordingMethodInSameClass");
     }
 }

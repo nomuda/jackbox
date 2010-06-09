@@ -26,7 +26,7 @@ public class RecordingAspect {
         MethodRecording recording = createMethodRecording(thisPointCut);
 
         if (ongoingRecording.get() != null) {
-            throw new IllegalStateException("Don't want to override ongoingRecording");
+            throw new IllegalStateException("Don't want to override " + ongoingRecording.get().getMethod());
         }
         ongoingRecording.set(recording);
         Object result = thisPointCut.proceed();

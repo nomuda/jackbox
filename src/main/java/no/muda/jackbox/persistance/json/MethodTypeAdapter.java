@@ -2,7 +2,6 @@ package no.muda.jackbox.persistance.json;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -43,7 +42,7 @@ public class MethodTypeAdapter implements JsonSerializer<Method>, JsonDeserializ
 		for (int i = 0; i < array.size(); i++) {
 			parameters.add( Class.forName(array.get(i).getAsString()) );
 		}
-		return (Class<?>[]) parameters.toArray(new Class<?>[]{});
+		return parameters.toArray(new Class<?>[]{});
 	}
 
 	public Method deserialize(JsonElement element, Type typeOfSrc,

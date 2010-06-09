@@ -36,7 +36,7 @@ class MethodRecordingTypeAdaptor implements JsonSerializer<MethodRecording>, Jso
 		  JsonObject obj = new JsonObject();
 		  obj.addProperty("classname", src.getClass().getCanonicalName());
 		  obj.add("method", context.serialize(src.getMethod()));
-		  List returnValues = Arrays.asList(src.getRecordedResult());
+		  List<Object> returnValues = Arrays.asList(src.getRecordedResult());
 		  obj.add("arguments", context.serialize(src.getArguments()) );
 		  obj.add("returnvalues", context.serialize(returnValues));
 
@@ -48,8 +48,8 @@ class MethodRecordingTypeAdaptor implements JsonSerializer<MethodRecording>, Jso
 		JsonObject obj = element.getAsJsonObject();
 		String className = obj.getAsJsonPrimitive("classname").getAsString();
 
-		List returnValues = context.deserialize(obj.get("returnvalues"), List.class);
-		List arguments = context.deserialize(obj.get("arguments"), List.class);
+		List<Object> returnValues = context.deserialize(obj.get("returnvalues"), List.class);
+		List<Object> arguments = context.deserialize(obj.get("arguments"), List.class);
 
 		Method method = context.deserialize(obj.get("method"), Method.class);
 
