@@ -1,9 +1,6 @@
 package no.muda.jackbox;
 
 import static org.fest.assertions.Assertions.assertThat;
-
-import java.util.Arrays;
-
 import no.muda.jackbox.example.ExampleDependency;
 import no.muda.jackbox.example.ExampleRecordedObject;
 
@@ -19,7 +16,7 @@ public class JackboxReplayTest {
         recordedExampleMethodWith2And2 =
             new MethodRecording(ExampleRecordedObject.class,
                     ExampleRecordedObject.class.getMethod("exampleMethod", Integer.TYPE, Integer.TYPE),
-                    Arrays.asList(2, 2));
+                    new Object[] { 2, 2 });
     }
 
     @Test
@@ -53,12 +50,12 @@ public class JackboxReplayTest {
 
         MethodRecording methodRecording = new MethodRecording(ExampleRecordedObject.class,
                 ExampleRecordedObject.class.getMethod("exampleMethodThatDelegatesToDependency", String.class),
-                Arrays.asList("abcd"));
+                new Object[] { "abcd" });
         methodRecording.setReturnValue(recordedReturnValueFromDependencyMethod);
 
         MethodRecording dependencyMethodRecording = new MethodRecording(ExampleDependency.class,
                 ExampleDependency.class.getMethod("invokedMethodOnDependency", String.class),
-                Arrays.asList("abcd"));
+                new Object[] { "abcd" });
         dependencyMethodRecording.setReturnValue(recordedReturnValueFromDependencyMethod);
         methodRecording.addDependencyMethodCall(dependencyMethodRecording);
 

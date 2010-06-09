@@ -1,7 +1,6 @@
 package no.muda.jackbox;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.junit.Assert.fail;
 
 import java.lang.reflect.Method;
 
@@ -36,9 +35,8 @@ public class JackboxRecordingTest {
         MethodRecording recording = JackboxRecorder.getLastCompletedRecording();
 
         assertThat(recording.getMethod().getName()).isEqualTo("exampleMethod");
-        assertThat(recording.getArguments()).containsExactly(2, 3);
-        assertThat(recording.getRecordedResult())
-            .isEqualTo(actualReturnedValue);
+        assertThat(recording.getArguments()).containsOnly(2, 3);
+        assertThat(recording.getRecordedResult()).isEqualTo(actualReturnedValue);
     }
 
     @Test
@@ -57,22 +55,9 @@ public class JackboxRecordingTest {
         MethodRecording dependentRecording =
             recording.getDependencyMethodRecording(invokedMethodOnDependency);
 
-        assertThat(dependentRecording.getArguments()).containsExactly(delegatedArgument);
-        assertThat(dependentRecording.getRecordedResult())
-            .isEqualTo("ABCD");
+        assertThat(dependentRecording.getArguments()).containsOnly(delegatedArgument);
+        assertThat(dependentRecording.getRecordedResult()).isEqualTo("ABCD");
     }
 
-    @Test
-    public void shouldFailWhenRecordingMethodCallsRecordingMethod() throws Exception {
-        ExampleRecordedObject recordedObject = new ExampleRecordedObject();
 
-        try {
-            recordedObject.callRecordingMethodInSameClass();
-            fail("Should get exception");
-        }
-        catch(IllegalStateException e) {
-            // Expected
-            assertThat(e.getMessage()).contains("callRecordingMethodInSameClass");
-        }
-    }
 }

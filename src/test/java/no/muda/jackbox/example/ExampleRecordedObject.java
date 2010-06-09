@@ -20,8 +20,7 @@ public class ExampleRecordedObject {
         return exampleDependency.invokedMethodOnDependency(argument);
     }
 
-    @Recording
-    public void callRecordingMethodInSameClass() {
-        exampleMethod(1, 2);
+    public ExampleEntity methodWithEntity(ExampleEntity entity) {
+        return entity;
     }
 }

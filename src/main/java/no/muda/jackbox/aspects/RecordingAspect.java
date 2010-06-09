@@ -1,8 +1,6 @@
 package no.muda.jackbox.aspects;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.List;
 
 import no.muda.jackbox.DependencyRecording;
 import no.muda.jackbox.JackboxRecorder;
@@ -66,7 +64,7 @@ public class RecordingAspect {
 
         Method method = getMethod(thisPointCut);
 
-        List arguments = Arrays.asList(thisPointCut.getArgs());
+        Object[] arguments = thisPointCut.getArgs();
         return new MethodRecording(targetClass, method, arguments);
     }
 

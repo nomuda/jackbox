@@ -39,9 +39,14 @@ public class MethodTypeAdapter implements JsonSerializer<Method>, JsonDeserializ
 	private Class<?>[] getParametersFromJsonArray(JsonArray array) throws ClassNotFoundException {
 		List<Class<?>> parameters = new LinkedList<Class<?>>();
 
-		for (int i = 0; i < array.size(); i++) {
-			parameters.add( Class.forName(array.get(i).getAsString()) );
-		}
+		for (JsonElement jsonElement : array) {
+		    String paramType = jsonElement.getAsString();
+		    if (paramType.equals("int")) {
+		        parameters.add(Integer.TYPE);
+		    } else {
+		        parameters.add(Class.forName(paramType));
+		    }
+        }
 		return parameters.toArray(new Class<?>[]{});
 	}
 

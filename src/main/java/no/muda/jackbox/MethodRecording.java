@@ -1,26 +1,31 @@
 package no.muda.jackbox;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import no.muda.jackbox.aspects.RecordingAspect;
 
-@SuppressWarnings("unchecked")
 public class MethodRecording {
 
-    private List arguments;
+    private Object[] arguments;
     private Object returnValue;
     private Map<Class<?>, DependencyRecording> dependencyRecordings
            = new HashMap<Class<?>, DependencyRecording>();
-    private final Class<?> klass;
+    private final Class<?> targetClass;
     private final Method method;
 
-    public MethodRecording(Class<?> klass, Method method, List arguments) {
-        this.klass = klass;
+    public MethodRecording(Class<?> klass, Method method, Object[] arguments) {
+        this.targetClass = klass;
         this.method = method;
         this.arguments = arguments;
+    }
+
+    public Class<?> getTargetClass() {
+        return targetClass;
     }
 
     public Method getMethod() {
@@ -35,7 +40,7 @@ public class MethodRecording {
         this.returnValue = returnValue;
     }
 
-    public List getArguments() {
+    public Object[] getArguments() {
         return arguments;
     }
 
@@ -50,10 +55,10 @@ public class MethodRecording {
     }
 
     public void replay() throws Exception {
-        Object replayInstance = klass.newInstance();
+        Object replayInstance = targetClass.newInstance();
 
         RecordingAspect.setReplayingRecording(this);
-        Object replayedResult = getMethod().invoke(replayInstance, arguments.toArray());
+        Object replayedResult = getMethod().invoke(replayInstance, arguments);
         RecordingAspect.clearReplayingRecording();
 
         if (!nullSafeEquals(replayedResult, getRecordedResult())) {
@@ -61,10 +66,6 @@ public class MethodRecording {
                     + " expected <" + getRecordedResult() + "> got <" +
                     replayedResult + ">");
         }
-    }
-
-    private boolean nullSafeEquals(Object replayedResult, Object recordedResult) {
-        return replayedResult != null ? replayedResult.equals(recordedResult) : recordedResult == null;
     }
 
     public void addDependencyMethodCall(MethodRecording dependencyMethodRecording) {
@@ -89,56 +90,48 @@ public class MethodRecording {
                 * result
                 + ((dependencyRecordings == null) ? 0 : dependencyRecordings
                         .hashCode());
-        result = prime * result + ((klass == null) ? 0 : klass.hashCode());
+        result = prime * result + ((targetClass == null) ? 0 : targetClass.hashCode());
         result = prime * result + ((method == null) ? 0 : method.hashCode());
         result = prime * result
                 + ((returnValue == null) ? 0 : returnValue.hashCode());
         return result;
     }
 
+
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (!(obj instanceof MethodRecording)) return false;
+
         MethodRecording other = (MethodRecording) obj;
-        if (arguments == null) {
-            if (other.arguments != null)
-                return false;
-        } else if (!arguments.equals(other.arguments))
-            return false;
-        if (dependencyRecordings == null) {
-            if (other.dependencyRecordings != null)
-                return false;
-        } else if (!dependencyRecordings.equals(other.dependencyRecordings))
-            return false;
-        if (klass == null) {
-            if (other.klass != null)
-                return false;
-        } else if (!klass.equals(other.klass))
-            return false;
-        if (method == null) {
-            if (other.method != null)
-                return false;
-        } else if (!method.equals(other.method))
-            return false;
-        if (returnValue == null) {
-            if (other.returnValue != null)
-                return false;
-        } else if (!returnValue.equals(other.returnValue))
-            return false;
-        return true;
+        return nullSafeEquals(arguments, other.arguments) &&
+            nullSafeEquals(dependencyRecordings, other.dependencyRecordings) &&
+            nullSafeEquals(targetClass, other.targetClass) &&
+            nullSafeEquals(method, other.method) &&
+            nullSafeEquals(returnValue, other.returnValue);
+    }
+
+    private<T> boolean nullSafeEquals(T a, T b) {
+        return a != null ? a.equals(b) : b == null;
+    }
+
+    private<T> boolean nullSafeEquals(T[] a, T[] b) {
+        return a != null ? Arrays.asList(a).equals(Arrays.asList(b)) : b == null;
     }
 
     @Override
     public String toString() {
-        return "MethodRecording [arguments=" + arguments
+        return "MethodRecording [arguments=" + Arrays.asList(arguments)
                 + ", dependencyRecordings=" + dependencyRecordings + ", klass="
-                + klass + ", method=" + method + ", returnValue=" + returnValue
+                + targetClass + ", method=" + method + ", returnValue=" + returnValue
                 + "]";
+    }
+
+    public List<MethodRecording> getDependencyMethodRecordings() {
+        List<MethodRecording> result = new ArrayList<MethodRecording>();
+        for (DependencyRecording dependencyRecording : dependencyRecordings.values()) {
+            result.addAll(dependencyRecording.getMethodRecordings().values());
+        }
+        return result;
     }
 
 }
