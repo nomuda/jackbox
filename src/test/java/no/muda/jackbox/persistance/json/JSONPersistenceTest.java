@@ -1,17 +1,16 @@
 package no.muda.jackbox.persistance.json;
 
-import static org.fest.assertions.Assertions.assertThat;
+import no.muda.jackbox.MethodRecording;
+import no.muda.jackbox.example.Entity;
+import no.muda.jackbox.example.ExampleDependency;
+import no.muda.jackbox.example.ExampleRecordedObject;
+import org.junit.Test;
 
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
 
-import no.muda.jackbox.MethodRecording;
-import no.muda.jackbox.example.ExampleDependency;
-import no.muda.jackbox.example.ExampleEntity;
-import no.muda.jackbox.example.ExampleRecordedObject;
-
-import org.junit.Test;
+import static org.fest.assertions.Assertions.assertThat;
 
 public class JSONPersistenceTest {
 
@@ -35,9 +34,9 @@ public class JSONPersistenceTest {
     public void shouldPersistUserProvidedObjects() throws Exception {
         MethodRecording recording = new MethodRecording(
                 ExampleRecordedObject.class,
-                ExampleRecordedObject.class.getMethod("methodWithEntity", ExampleEntity.class),
-                new Object[] { new ExampleEntity("foo") });
-        recording.setReturnValue(new ExampleEntity("bar"));
+                ExampleRecordedObject.class.getMethod("methodWithEntity", Entity.class),
+                new Object[] { new Entity("foo") });
+        recording.setReturnValue(new Entity("bar"));
 
         MethodRecording readRecording = persistAndRestore(recording);
         assertThat(readRecording).isEqualTo(recording);
