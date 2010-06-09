@@ -36,44 +36,6 @@ public class DependencyRecording {
         methodRecordings.put(methodRecording.getMethod(), methodRecording);
     }
 
-    public void setMethodRecordings(Map<Method, MethodRecording> recordings) {
-        methodRecordings = recordings;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result
-                + ((dependencyClass == null) ? 0 : dependencyClass.hashCode());
-        result = prime
-                * result
-                + ((methodRecordings == null) ? 0 : methodRecordings.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        DependencyRecording other = (DependencyRecording) obj;
-        if (dependencyClass == null) {
-            if (other.dependencyClass != null)
-                return false;
-        } else if (!dependencyClass.equals(other.dependencyClass))
-            return false;
-        if (methodRecordings == null) {
-            if (other.methodRecordings != null)
-                return false;
-        } else if (!methodRecordings.equals(other.methodRecordings))
-            return false;
-        return true;
-    }
-
     @Override
     public String toString() {
         return "DependencyRecording [dependencyClass=" + dependencyClass

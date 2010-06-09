@@ -82,19 +82,7 @@ public class MethodRecording {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result
-                + ((arguments == null) ? 0 : arguments.hashCode());
-        result = prime
-                * result
-                + ((dependencyRecordings == null) ? 0 : dependencyRecordings
-                        .hashCode());
-        result = prime * result + ((targetClass == null) ? 0 : targetClass.hashCode());
-        result = prime * result + ((method == null) ? 0 : method.hashCode());
-        result = prime * result
-                + ((returnValue == null) ? 0 : returnValue.hashCode());
-        return result;
+        return method.hashCode();
     }
 
 
@@ -104,7 +92,6 @@ public class MethodRecording {
 
         MethodRecording other = (MethodRecording) obj;
         return nullSafeEquals(arguments, other.arguments) &&
-            nullSafeEquals(dependencyRecordings, other.dependencyRecordings) &&
             nullSafeEquals(targetClass, other.targetClass) &&
             nullSafeEquals(method, other.method) &&
             nullSafeEquals(returnValue, other.returnValue);

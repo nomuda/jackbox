@@ -4,6 +4,7 @@ import static org.fest.assertions.Assertions.assertThat;
 
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.lang.reflect.Method;
 
 import no.muda.jackbox.MethodRecording;
 import no.muda.jackbox.example.ExampleDependency;
@@ -51,18 +52,19 @@ public class JSONPersistenceTest {
                 new Object[] { "abcd" });
         recording.setReturnValue(recordedReturnValueFromDependencyMethod);
 
+        Method invokedMethodOnDependency = ExampleDependency.class.getMethod("invokedMethodOnDependency", String.class);
         MethodRecording dependencyMethodRecording = new MethodRecording(ExampleDependency.class,
-                ExampleDependency.class.getMethod("invokedMethodOnDependency", String.class),
+                invokedMethodOnDependency,
                 new Object[] { "abcd" });
 
-        dependencyMethodRecording.setReturnValue(recordedReturnValueFromDependencyMethod );
+        dependencyMethodRecording.setReturnValue(recordedReturnValueFromDependencyMethod);
         recording.addDependencyMethodCall(dependencyMethodRecording);
 
         MethodRecording readRecording = persistAndRestore(recording);
 
         assertThat(readRecording).isEqualTo(recording);
-        assertThat(readRecording.getDependencyRecording(ExampleDependency.class))
-            .isEqualTo(recording.getDependencyRecording(ExampleDependency.class));
+        assertThat(readRecording.getDependencyMethodRecording(invokedMethodOnDependency))
+            .isEqualTo(recording.getDependencyMethodRecording(invokedMethodOnDependency));
     }
 
     private MethodRecording persistAndRestore(MethodRecording recording) {

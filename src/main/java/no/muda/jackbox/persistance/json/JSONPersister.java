@@ -4,9 +4,7 @@ import java.io.Reader;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Arrays;
-import java.util.Map;
 
-import no.muda.jackbox.DependencyRecording;
 import no.muda.jackbox.MethodRecording;
 
 import com.google.gson.Gson;
@@ -19,22 +17,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import com.google.gson.reflect.TypeToken;
 
 public class JSONPersister implements Persister {
-    public String persistToString(Object recording) {
-		Gson gson = new GsonBuilder()
-		    .registerTypeAdapter(DependencyRecording.class, new DependencyRecordingTypeAdaptor())
-			.registerTypeAdapter(MethodRecording.class, new MethodRecordingTypeAdaptor())
-			.registerTypeAdapter(Method.class, new MethodTypeAdapter())
-			.create();
-        return gson.toJson(recording);
-    }
-
     public void persistToWriter(MethodRecording recording, Appendable output) {
         Gson gson = new GsonBuilder()
             .setPrettyPrinting()
-            .registerTypeAdapter(DependencyRecording.class, new DependencyRecordingTypeAdaptor())
             .registerTypeAdapter(MethodRecording.class, new MethodRecordingTypeAdaptor())
             .registerTypeAdapter(Method.class, new MethodTypeAdapter())
             .create();
@@ -43,7 +30,6 @@ public class JSONPersister implements Persister {
 
     public MethodRecording readFromReader(Reader input) {
         Gson gson = new GsonBuilder()
-            .registerTypeAdapter(DependencyRecording.class, new DependencyRecordingTypeAdaptor())
             .registerTypeAdapter(MethodRecording.class, new MethodRecordingTypeAdaptor())
             .registerTypeAdapter(Method.class, new MethodTypeAdapter())
             .create();
@@ -100,36 +86,4 @@ class MethodRecordingTypeAdaptor implements JsonSerializer<MethodRecording>, Jso
             throw new RuntimeException(e);
         }
     }
-}
-
-class DependencyRecordingTypeAdaptor implements JsonSerializer<DependencyRecording>, JsonDeserializer<DependencyRecording> {
-    static final Type methodRecordingsType = new TypeToken<Map<Method, MethodRecording>>() {}.getType();
-
-    public JsonElement serialize(DependencyRecording src, Type typeOfSrc, JsonSerializationContext context) {
-		  JsonObject obj = new JsonObject();
-		  obj.addProperty("classname", src.getClass().getCanonicalName());
-
-		  obj.add( "methodrecordings", context.serialize(src.getMethodRecordings(), methodRecordingsType ) );
-		  return obj;
-	  }
-
-	  public DependencyRecording deserialize(JsonElement element, Type typeOfSrc,
-			JsonDeserializationContext context) throws JsonParseException {
-		JsonObject obj = element.getAsJsonObject();
-		String className = obj.getAsJsonPrimitive("classname").getAsString();
-
-
-		JsonObject methodRecordingsJson = obj.getAsJsonObject("methodrecordings");
-
-		Map<Method, MethodRecording> methodrecordings =
-			context.deserialize(methodRecordingsJson, methodRecordingsType);
-
-		try {
-			DependencyRecording depRecording = new DependencyRecording(Class.forName(className));
-			depRecording.setMethodRecordings(methodrecordings);
-			return depRecording;
-		} catch (ClassNotFoundException e) {
-			throw new JsonParseException(e);
-		}
-	}
 }
