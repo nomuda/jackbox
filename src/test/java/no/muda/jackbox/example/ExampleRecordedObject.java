@@ -23,4 +23,7 @@ public class ExampleRecordedObject {
     public Entity methodWithEntity(Entity entity) {
         return entity;
     }
+
+    public void methodWithoutReturnValue() {
+    }
 }

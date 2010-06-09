@@ -6,6 +6,8 @@ import no.muda.jackbox.example.ExampleDependency;
 import no.muda.jackbox.example.ExampleRecordedObject;
 import org.junit.Test;
 
+import com.google.gson.JsonParseException;
+
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
@@ -31,6 +33,16 @@ public class JSONPersistenceTest {
     }
 
     @Test
+    public void shouldPersistMethodWithoutReturnValue() throws Exception {
+        MethodRecording recording = new MethodRecording(
+                ExampleRecordedObject.class,
+                ExampleRecordedObject.class.getMethod("methodWithoutReturnValue"),
+                new Object[]{});
+        recording.setReturnValue(null);
+
+        MethodRecording readRecording = persistAndRestore(recording);
+        assertThat(readRecording).isEqualTo(recording);
+    }
     public void shouldPersistUserProvidedObjects() throws Exception {
         MethodRecording recording = new MethodRecording(
                 ExampleRecordedObject.class,
@@ -70,8 +82,12 @@ public class JSONPersistenceTest {
         Persister persister = new JSONPersister();
         StringWriter output = new StringWriter();
         persister.persistToWriter(recording, output);
-        MethodRecording readRecording = persister.readFromReader(new StringReader(output.toString()));
-        return readRecording;
+        try {
+            MethodRecording readRecording = persister.readFromReader(new StringReader(output.toString()));
+            return readRecording;
+        }
+        catch (JsonParseException e) {
+            throw new IllegalStateException("Generated JSON failed to parse: " + output, e);
+        }
     }
-
 }
