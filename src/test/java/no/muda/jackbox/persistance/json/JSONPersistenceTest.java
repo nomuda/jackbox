@@ -11,6 +11,8 @@ import com.google.gson.JsonParseException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -43,12 +45,38 @@ public class JSONPersistenceTest {
         MethodRecording readRecording = persistAndRestore(recording);
         assertThat(readRecording).isEqualTo(recording);
     }
+
+    @Test
     public void shouldPersistUserProvidedObjects() throws Exception {
         MethodRecording recording = new MethodRecording(
                 ExampleRecordedObject.class,
                 ExampleRecordedObject.class.getMethod("methodWithEntity", Entity.class),
                 new Object[] { new Entity("foo") });
         recording.setReturnValue(new Entity("bar"));
+
+        MethodRecording readRecording = persistAndRestore(recording);
+        assertThat(readRecording).isEqualTo(recording);
+    }
+
+    @Test
+    public void shouldPersistParameterizedReturnValue() throws Exception {
+        MethodRecording recording = new MethodRecording(
+                ExampleRecordedObject.class,
+                ExampleRecordedObject.class.getMethod("methodWithPatameterizedReturnValue"),
+                new Object[]{});
+        recording.setReturnValue(Arrays.asList(1, 2));
+
+        MethodRecording readRecording = persistAndRestore(recording);
+        assertThat(readRecording).isEqualTo(recording);
+    }
+
+    @Test
+    public void shouldPersistParameterizedArguments() throws Exception {
+        MethodRecording recording = new MethodRecording(
+                ExampleRecordedObject.class,
+                ExampleRecordedObject.class.getMethod("methodWithPatameterizedArgument", List.class),
+                new Object[] { Arrays.asList(1, 2) });
+        recording.setReturnValue(null);
 
         MethodRecording readRecording = persistAndRestore(recording);
         assertThat(readRecording).isEqualTo(recording);

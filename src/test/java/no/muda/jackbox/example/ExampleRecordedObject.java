@@ -1,5 +1,8 @@
 package no.muda.jackbox.example;
 
+import java.util.Arrays;
+import java.util.List;
+
 import no.muda.jackbox.annotations.Recording;
 
 public class ExampleRecordedObject {
@@ -23,6 +26,14 @@ public class ExampleRecordedObject {
     public Entity methodWithEntity(Entity entity) {
         return entity;
     }
+
+    public List<Integer> methodWithPatameterizedReturnValue() {
+        return Arrays.asList(1, 2);
+    }
+
+    public void methodWithPatameterizedArgument(List<Integer> argument) {
+    }
+    
 
     public void methodWithoutReturnValue() {
     }

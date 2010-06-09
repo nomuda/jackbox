@@ -70,7 +70,7 @@ class MethodRecordingTypeAdaptor implements JsonSerializer<MethodRecording>, Jso
 		JsonArray jsonArguments = (JsonArray) obj.get("arguments");
 		Object[] arguments = new Object[method.getParameterTypes().length];
 		for (int i = 0; i < jsonArguments.size(); i++) {
-		    arguments[i] = context.deserialize(jsonArguments.get(i), method.getParameterTypes()[i]);
+		    arguments[i] = context.deserialize(jsonArguments.get(i), method.getGenericParameterTypes()[i]);
         }
 
         MethodRecording methodRecording = new MethodRecording(clazz, method, arguments);
