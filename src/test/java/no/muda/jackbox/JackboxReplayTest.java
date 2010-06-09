@@ -1,11 +1,11 @@
 package no.muda.jackbox;
 
-import static org.fest.assertions.Assertions.assertThat;
 import no.muda.jackbox.example.ExampleDependency;
 import no.muda.jackbox.example.ExampleRecordedObject;
-
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 public class JackboxReplayTest {
 
@@ -29,10 +29,9 @@ public class JackboxReplayTest {
     public void shouldThrowExceptionIfReturnValueChanges() throws Exception {
         recordedExampleMethodWith2And2.setReturnValue(5);
 
-        boolean threwException = true;
+        boolean threwException = false;
         try {
             recordedExampleMethodWith2And2.replay();
-            threwException = false;
         } catch (AssertionError e) {
             assertThat(e.getMessage())
                 .contains("expected <5>")
