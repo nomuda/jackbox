@@ -53,11 +53,9 @@ public class JackboxRecordingTest {
 
         Method invokedMethodOnDependency = ExampleDependency.class.getMethod("invokedMethodOnDependency", String.class);
         MethodRecording dependentRecording =
-            recording.getDependencyMethodRecording(invokedMethodOnDependency);
+            recording.getDependencyMethodRecordings(invokedMethodOnDependency)[0];
 
         assertThat(dependentRecording.getArguments()).containsOnly(delegatedArgument);
         assertThat(dependentRecording.getRecordedResult()).isEqualTo("ABCD");
     }
-
-
 }

@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
 public class MethodRecording {
 
@@ -76,9 +77,9 @@ public class MethodRecording {
         addDependencyRecording(dependencyRecording);
     }
 
-    public MethodRecording getDependencyMethodRecording(Method dependentMethod) {
+    public MethodRecording[] getDependencyMethodRecordings(Method dependentMethod) {
         DependencyRecording dependencyRecording = dependencyRecordings.get(dependentMethod.getDeclaringClass());
-        return dependencyRecording.getMethodRecording(dependentMethod.getName());
+        return dependencyRecording.getMethodRecordings(dependentMethod.getName());
     }
 
     @Override
@@ -117,7 +118,9 @@ public class MethodRecording {
     public List<MethodRecording> getDependencyMethodRecordings() {
         List<MethodRecording> result = new ArrayList<MethodRecording>();
         for (DependencyRecording dependencyRecording : dependencyRecordings.values()) {
-            result.addAll(dependencyRecording.getMethodRecordings().values());
+            for (Queue<MethodRecording> methodRecordingQueue : dependencyRecording.getMethodRecordingQueues().values()) {
+                result.addAll(methodRecordingQueue);
+            }
         }
         return result;
     }

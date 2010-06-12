@@ -1,8 +1,11 @@
 package no.muda.jackbox;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Map.Entry;
 
 
@@ -10,25 +13,25 @@ public class DependencyRecording {
 
     private final Class<?> dependencyClass;
 
-    // TODO: Create test that forces Map<String, Queue<MethodRecording>>
-    private Map<Method, MethodRecording> methodRecordings = new HashMap<Method, MethodRecording>();
+    private Map<Method, Queue<MethodRecording>> methodRecordings = new HashMap<Method, Queue<MethodRecording>>();
 
     public DependencyRecording(Class<?> dependencyClass) {
         this.dependencyClass = dependencyClass;
     }
 
-    public MethodRecording getMethodRecording(Method method) {
-        return methodRecordings.get(method);
+    public MethodRecording[] getMethodRecordings(Method method) {
+        Queue<MethodRecording> recordings = methodRecordings.get(method);
+        return recordings == null ? null : recordings.toArray(new MethodRecording[]{});
     }
 
-    public MethodRecording getMethodRecording(String methodName) {
-        for (Entry<Method, MethodRecording> entry : methodRecordings.entrySet()) {
-            if (entry.getKey().getName().equals(methodName)) return entry.getValue();
+    public MethodRecording[] getMethodRecordings(String methodName) {
+        for (Entry<Method, Queue<MethodRecording>> entry : methodRecordings.entrySet()) {
+            if (entry.getKey().getName().equals(methodName)) return entry.getValue().toArray(new MethodRecording[]{});
         }
         return null;
     }
 
-    public Map<Method, MethodRecording> getMethodRecordings() {
+    public Map<Method, Queue<MethodRecording>> getMethodRecordingQueues() {
         return methodRecordings;
     }
 
@@ -37,7 +40,14 @@ public class DependencyRecording {
     }
 
     public void addMethodRecording(MethodRecording methodRecording) {
-        methodRecordings.put(methodRecording.getMethod(), methodRecording);
+        Method method = methodRecording.getMethod();
+
+        Queue<MethodRecording> recordingsQueue = methodRecordings.get(method);
+        if (getMethodRecordings(method) == null) {
+             recordingsQueue = new LinkedList<MethodRecording>();
+            methodRecordings.put(method, recordingsQueue);
+        }
+        recordingsQueue.add(methodRecording);
     }
 
     @Override

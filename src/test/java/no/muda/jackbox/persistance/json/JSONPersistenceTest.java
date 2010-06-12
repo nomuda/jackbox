@@ -102,8 +102,8 @@ public class JSONPersistenceTest {
         MethodRecording readRecording = persistAndRestore(recording);
 
         assertThat(readRecording).isEqualTo(recording);
-        assertThat(readRecording.getDependencyMethodRecording(invokedMethodOnDependency))
-            .isEqualTo(recording.getDependencyMethodRecording(invokedMethodOnDependency));
+        assertThat(readRecording.getDependencyMethodRecordings(invokedMethodOnDependency))
+            .isEqualTo(recording.getDependencyMethodRecordings(invokedMethodOnDependency));
     }
 
     private MethodRecording persistAndRestore(MethodRecording recording) {

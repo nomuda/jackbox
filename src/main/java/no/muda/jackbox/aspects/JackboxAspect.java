@@ -54,7 +54,7 @@ public class JackboxAspect {
     private Object capturedValue(ProceedingJoinPoint thisPointCut) {
         DependencyRecording dependencyRecording = methodRecording.get().getDependencyRecording(thisPointCut.getSignature().getDeclaringType());
 
-        MethodRecording dependencyMethodRecording = dependencyRecording.getMethodRecording(thisPointCut.getSignature().getName());
+        MethodRecording dependencyMethodRecording = dependencyRecording.getMethodRecordings(thisPointCut.getSignature().getName())[0];
         return dependencyMethodRecording.getRecordedResult();
     }
 
