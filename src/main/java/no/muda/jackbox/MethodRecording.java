@@ -99,7 +99,7 @@ public class MethodRecording {
         return ArrayUtils.isEquals(arguments, other.arguments) &&
             nullSafeEquals(targetClass, other.targetClass) &&
             nullSafeEquals(method, other.method) &&
-            nullSafeEquals(returnValue, other.returnValue);
+            ArrayUtils.isEquals(returnValue, other.returnValue);
     }
 
     private<T> boolean nullSafeEquals(T a, T b) {

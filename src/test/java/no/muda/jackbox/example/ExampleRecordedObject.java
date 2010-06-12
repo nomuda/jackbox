@@ -33,11 +33,13 @@ public class ExampleRecordedObject {
 
     public void methodWithParameterizedArgument(List<Integer> argument) {
     }
-    
 
     public void methodWithoutReturnValue() {
     }
 
-    public void methodWithArrayOfPrimitivesArgument(int arg[]) {
+    public void methodWithArrayOfPrimitivesArgument(int arg[]) {}
+    public void methodWithArrayArgument(Integer arg[]) {}
+    public short[] methodWithArrayReturnValue() {
+        return new short[]{1, 2, 3};
     }
 }

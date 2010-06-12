@@ -90,7 +90,31 @@ public class JSONPersistenceTest {
                 new Object[] { new int[]{1, 2, 3} });
         recording.setReturnValue(null);
 
-        MethodRecording readRecording = persistAndRestore(recording, true);
+        MethodRecording readRecording = persistAndRestore(recording);
+        assertThat(readRecording).isEqualTo(recording);
+    }
+
+    @Test
+    public void shouldPersistArrayArgument() throws Exception {
+        MethodRecording recording = new MethodRecording(
+        ExampleRecordedObject.class,
+        ExampleRecordedObject.class.getMethod("methodWithArrayArgument", Integer[].class),
+          new Object[] { new Integer[]{1, 2, 3} });
+        recording.setReturnValue(null);
+
+        MethodRecording readRecording = persistAndRestore(recording);
+        assertThat(readRecording).isEqualTo(recording);
+    }
+
+    @Test
+    public void shouldPersistArrayReturnValue() throws Exception {
+        MethodRecording recording = new MethodRecording(
+        ExampleRecordedObject.class,
+        ExampleRecordedObject.class.getMethod("methodWithArrayReturnValue", new Class[]{}),
+          new Object[] {});
+        recording.setReturnValue(new short[]{2, 3, 4});
+
+        MethodRecording readRecording = persistAndRestore(recording);
         assertThat(readRecording).isEqualTo(recording);
     }
 
