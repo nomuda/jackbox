@@ -30,6 +30,19 @@ public class MethodTypeAdapter implements JsonSerializer<Method>,
         return obj;
     }
 
+    private Class<?> typeNameToClass(String typeName) throws ClassNotFoundException {
+        if (typeName.equals("int")) return int.class;
+        else if (typeName.equals("long")) return long.class;
+        else if (typeName.equals("boolean")) return boolean.class;
+        else if (typeName.equals("double")) return double.class;
+        else if (typeName.equals("float")) return float.class;
+        else if (typeName.equals("char")) return char.class;
+        else if (typeName.equals("byte")) return byte.class;
+        else if (typeName.equals("short")) return short.class;
+        else if (typeName.equals("void")) return void.class;
+        else return Class.forName(typeName);
+    }
+
     private JsonArray getJsonArrayForParameters(Class<?>[] parameters) {
         JsonArray parametersArray = new JsonArray();
         for (Class<?> p : parameters) {
@@ -44,11 +57,7 @@ public class MethodTypeAdapter implements JsonSerializer<Method>,
 
         for (JsonElement jsonElement : array) {
             String paramType = jsonElement.getAsString();
-            if (paramType.equals("int")) {
-                parameters.add(Integer.TYPE);
-            } else {
-                parameters.add(Class.forName(paramType));
-            }
+            parameters.add(typeNameToClass(paramType));
         }
         return parameters.toArray(new Class<?>[] {});
     }
