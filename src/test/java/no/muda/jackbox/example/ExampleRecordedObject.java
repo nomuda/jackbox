@@ -31,10 +31,13 @@ public class ExampleRecordedObject {
         return Arrays.asList(1, 2);
     }
 
-    public void methodWithPatameterizedArgument(List<Integer> argument) {
+    public void methodWithParameterizedArgument(List<Integer> argument) {
     }
     
 
     public void methodWithoutReturnValue() {
+    }
+
+    public void methodWithArrayOfPrimitivesArgument(int arg[]) {
     }
 }

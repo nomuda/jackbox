@@ -46,7 +46,7 @@ public class MethodTypeAdapter implements JsonSerializer<Method>,
     private JsonArray getJsonArrayForParameters(Class<?>[] parameters) {
         JsonArray parametersArray = new JsonArray();
         for (Class<?> p : parameters) {
-            parametersArray.add(new JsonPrimitive(p.getCanonicalName()));
+            parametersArray.add(new JsonPrimitive(p.getName()));
         }
         return parametersArray;
     }

@@ -74,11 +74,23 @@ public class JSONPersistenceTest {
     public void shouldPersistParameterizedArguments() throws Exception {
         MethodRecording recording = new MethodRecording(
                 ExampleRecordedObject.class,
-                ExampleRecordedObject.class.getMethod("methodWithPatameterizedArgument", List.class),
+                ExampleRecordedObject.class.getMethod("methodWithParameterizedArgument", List.class),
                 new Object[] { Arrays.asList(1, 2) });
         recording.setReturnValue(null);
 
         MethodRecording readRecording = persistAndRestore(recording);
+        assertThat(readRecording).isEqualTo(recording);
+    }
+
+    @Test
+    public void shouldPersistArrayOfPrimitivesArgument() throws Exception {
+        MethodRecording recording = new MethodRecording(
+                ExampleRecordedObject.class,
+                ExampleRecordedObject.class.getMethod("methodWithArrayOfPrimitivesArgument", int[].class),
+                new Object[] { new int[]{1, 2, 3} });
+        recording.setReturnValue(null);
+
+        MethodRecording readRecording = persistAndRestore(recording, true);
         assertThat(readRecording).isEqualTo(recording);
     }
 
@@ -107,9 +119,14 @@ public class JSONPersistenceTest {
     }
 
     private MethodRecording persistAndRestore(MethodRecording recording) {
+        return persistAndRestore(recording, false);
+    }
+
+    private MethodRecording persistAndRestore(MethodRecording recording, boolean debug) {
         Persister persister = new JSONPersister();
         StringWriter output = new StringWriter();
         persister.persistToWriter(recording, output);
+        if (debug) System.out.println("Generated: " + output);
         try {
             MethodRecording readRecording = persister.readFromReader(new StringReader(output.toString()));
             return readRecording;

@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.ObjectUtils;
+
 public class MethodRecording {
 
     private Object[] arguments;
@@ -93,18 +96,18 @@ public class MethodRecording {
         if (!(obj instanceof MethodRecording)) return false;
 
         MethodRecording other = (MethodRecording) obj;
-        return nullSafeEquals(arguments, other.arguments) &&
+        return ArrayUtils.isEquals(arguments, other.arguments) &&
             nullSafeEquals(targetClass, other.targetClass) &&
             nullSafeEquals(method, other.method) &&
             nullSafeEquals(returnValue, other.returnValue);
     }
 
     private<T> boolean nullSafeEquals(T a, T b) {
-        return a != null ? a.equals(b) : b == null;
+        return ObjectUtils.equals(a, b);
     }
 
     private<T> boolean nullSafeEquals(T[] a, T[] b) {
-        return a != null ? Arrays.asList(a).equals(Arrays.asList(b)) : b == null;
+        return Arrays.equals(a, b);
     }
 
     @Override
