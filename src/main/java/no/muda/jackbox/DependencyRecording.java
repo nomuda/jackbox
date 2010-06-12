@@ -17,6 +17,10 @@ public class DependencyRecording {
         this.dependencyClass = dependencyClass;
     }
 
+    public MethodRecording getMethodRecording(Method method) {
+        return methodRecordings.get(method);
+    }
+
     public MethodRecording getMethodRecording(String methodName) {
         for (Entry<Method, MethodRecording> entry : methodRecordings.entrySet()) {
             if (entry.getKey().getName().equals(methodName)) return entry.getValue();

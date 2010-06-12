@@ -8,4 +8,8 @@ public class ExampleDependency {
     public String invokedMethodOnDependency(String argument) {
         return argument.toUpperCase();
     }
+
+    @Dependency
+    public void anotherTestMethodWithoutArgumentsOrReturnValue() {
+    }
 }

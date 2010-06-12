@@ -70,7 +70,8 @@ public class MethodRecording {
 
     public void addDependencyMethodCall(MethodRecording dependencyMethodRecording) {
         Class<?> dependencyClass = dependencyMethodRecording.getMethod().getDeclaringClass();
-        DependencyRecording dependencyRecording = new DependencyRecording(dependencyClass);
+        DependencyRecording dependencyRecording = getDependencyRecording(dependencyClass);
+        if (dependencyRecording == null) dependencyRecording = new DependencyRecording(dependencyClass);
         dependencyRecording.addMethodRecording(dependencyMethodRecording);
         addDependencyRecording(dependencyRecording);
     }
