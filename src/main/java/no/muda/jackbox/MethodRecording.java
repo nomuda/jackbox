@@ -3,6 +3,7 @@ package no.muda.jackbox;
 import no.muda.jackbox.aspects.JackboxAspect;
 
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -21,6 +22,7 @@ public class MethodRecording {
            = new HashMap<Class<?>, DependencyRecording>();
     private final Class<?> targetClass;
     private final Method method;
+    private Throwable exceptionThrown;
 
     public MethodRecording(Class<?> klass, Method method, Object[] arguments) {
         this.targetClass = klass;
@@ -126,6 +128,14 @@ public class MethodRecording {
             }
         }
         return result;
+    }
+
+    public Throwable getExceptionThrown() {
+        return exceptionThrown;
+    }
+
+    public void setExceptionThrown(Throwable t) {
+        exceptionThrown = t;
     }
 
 }

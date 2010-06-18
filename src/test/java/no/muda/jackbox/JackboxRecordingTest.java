@@ -1,6 +1,7 @@
 package no.muda.jackbox;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 import java.lang.reflect.Method;
 
@@ -42,6 +43,34 @@ public class JackboxRecordingTest {
         MethodRecording recording = JackboxRecorder.getLastCompletedRecording();
 
         assertExampleMethodCall(2, 3, actualReturnedValue, recording);
+    }
+
+    @Test
+    public void shouldRecordMethodCallThatCanThrowException() {
+        recordedObject.methodThatThrowsException(false);
+
+        MethodRecording recording = JackboxRecorder.getLastCompletedRecording();
+
+        assertThat(recording.getMethod().getName()).isEqualTo("methodThatThrowsException");
+        assertThat(recording.getArguments()).containsOnly(false);
+        assertThat(recording.getExceptionThrown()).isNull();
+    }
+
+    @Test
+    public void shouldRecordMethodCallThatThrowsException() {
+        try {
+            recordedObject.methodThatThrowsException(true);
+            fail("Exception should have been thrown here.");
+        }
+        catch (IllegalArgumentException expected) {}
+
+        MethodRecording recording = JackboxRecorder.getLastCompletedRecording();
+
+        assertThat(recording.getMethod().getName()).isEqualTo("methodThatThrowsException");
+        assertThat(recording.getArguments()).containsOnly(true);
+        assertThat(recording.getRecordedResult())
+            .describedAs("Should get null as return value when exception thrown").isNull();
+        assertThat(recording.getExceptionThrown()).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test

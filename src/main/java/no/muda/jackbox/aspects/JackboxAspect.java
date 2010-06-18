@@ -27,13 +27,19 @@ public class JackboxAspect {
             throw new IllegalStateException("Don't want to override " + ongoingRecording.get().getMethod());
         }
         ongoingRecording.set(recording);
-        Object result = thisPointCut.proceed();
+        try {
+            Object result = thisPointCut.proceed();
+            recording.setReturnValue(result);
+        }
+        catch (Throwable t) {
+            recording.setExceptionThrown(t);
+        }
         ongoingRecording.set(null);
 
-        recording.setReturnValue(result);
         JackboxRecorder.addRecording(recording);
 
-        return result;
+        if (recording.getExceptionThrown() != null) throw recording.getExceptionThrown();
+        else return recording.getRecordedResult();
     }
 
     @Around("call(@no.muda.jackbox.annotations.Dependency * *(..)) " +

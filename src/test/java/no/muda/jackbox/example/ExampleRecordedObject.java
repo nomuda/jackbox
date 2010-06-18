@@ -42,4 +42,9 @@ public class ExampleRecordedObject {
     public short[] methodWithArrayReturnValue() {
         return new short[]{1, 2, 3};
     }
+
+    @Recording
+    public void methodThatThrowsException(boolean throwException) throws IllegalArgumentException {
+        if (throwException) throw new IllegalArgumentException("Was told to throw exception");
+    }
 }
