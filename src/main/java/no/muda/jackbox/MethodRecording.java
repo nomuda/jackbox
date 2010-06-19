@@ -65,16 +65,30 @@ public class MethodRecording {
 
         JackboxAspect.setReplayingRecording(this);
 
+        boolean gotException = false;
         Object replayedResult = null;
         try {
             replayedResult = getMethod().invoke(replayInstance, arguments);
         }
         catch (InvocationTargetException e) {
+            if (getExceptionThrown() == null
+                    || getExceptionThrown().getClass() != e.getCause().getClass()) {
+                String expected = (getExceptionThrown() == null) ?
+                        "no exception" : getExceptionThrown().getClass().getName();
+                throw new AssertionError("When replaying " + getMethod()
+                        + " expected throwing of <" + expected + "> got <" +
+                        e.getCause().getClass().getName() + ">");
+            }
+            gotException = true;
         }
 
         JackboxAspect.clearReplayingRecording();
 
-        if (!nullSafeEquals(replayedResult, getRecordedResult())) {
+        if (getExceptionThrown() != null && !gotException) {
+             throw new AssertionError("When replaying " + getMethod()
+                        + " expected throwing of <" + getExceptionThrown() + ">, got no exception thrown");
+        }
+        else if (!nullSafeEquals(replayedResult, getRecordedResult())) {
             throw new AssertionError("When replaying " + getMethod()
                     + " expected <" + getRecordedResult() + "> got <" +
                     replayedResult + ">");

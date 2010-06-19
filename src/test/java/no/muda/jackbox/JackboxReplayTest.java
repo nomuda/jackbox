@@ -44,6 +44,71 @@ public class JackboxReplayTest {
     }
 
     @Test
+    public void shouldThrowExceptionIfRecordedExceptionIsNotThrown() throws Exception {
+        MethodRecording methodRecording = new MethodRecording(ExampleRecordedObject.class,
+                ExampleRecordedObject.class.getMethod("methodThatThrowsException", boolean.class),
+                new Object[] {false});
+        methodRecording.setExceptionThrown(new IllegalArgumentException());
+
+        boolean threwException = false;
+        try {
+            methodRecording.replay();
+        } catch (AssertionError e) {
+            assertThat(e.getMessage())
+                .contains("expected throwing of <java.lang.IllegalArgumentException>")
+                .contains("no exception")
+                .contains("methodThatThrowsException");
+            // @TODO: include parameters in Assertion too
+            threwException = true;
+        }
+
+        assertThat(threwException).describedAs("Should throw when thrown exception changes").isTrue();
+    }
+
+    @Test
+    public void shouldThrowExceptionIfThrowingAnExceptionWhenNotRecorded() throws Exception {
+        MethodRecording methodRecording = new MethodRecording(ExampleRecordedObject.class,
+                ExampleRecordedObject.class.getMethod("methodThatThrowsException", boolean.class),
+                new Object[] {true});
+
+        boolean threwException = false;
+        try {
+            methodRecording.replay();
+        } catch (AssertionError e) {
+            assertThat(e.getMessage())
+                .contains("expected throwing of <no exception>")
+                .contains("got <java.lang.IllegalArgumentException>")
+                .contains("methodThatThrowsException");
+            // @TODO: include parameters in Assertion too
+            threwException = true;
+        }
+
+        assertThat(threwException).describedAs("Should throw when thrown exception changes").isTrue();
+    }
+
+    @Test
+    public void shouldThrowExceptionIfThrowingAnotherExceptionThanRecorded() throws Exception {
+        MethodRecording methodRecording = new MethodRecording(ExampleRecordedObject.class,
+                ExampleRecordedObject.class.getMethod("methodThatThrowsException", boolean.class),
+                new Object[] {true});
+        methodRecording.setExceptionThrown(new NullPointerException());
+
+        boolean threwException = false;
+        try {
+            methodRecording.replay();
+        } catch (AssertionError e) {
+            assertThat(e.getMessage())
+                .contains("expected throwing of <java.lang.NullPointerException>")
+                .contains("got <java.lang.IllegalArgumentException>")
+                .contains("methodThatThrowsException");
+            // @TODO: include parameters in Assertion too
+            threwException = true;
+        }
+
+        assertThat(threwException).describedAs("Should throw when thrown exception changes").isTrue();
+    }
+
+    @Test
     public void shouldReplayDelegatedObject() throws Exception {
         String recordedReturnValueFromDependencyMethod = "foo bar baz";
 
