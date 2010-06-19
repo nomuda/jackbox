@@ -1,15 +1,15 @@
 package no.muda.jackbox;
 
-import no.muda.jackbox.aspects.JackboxAspect;
-
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+
+import no.muda.jackbox.aspects.JackboxAspect;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -64,7 +64,14 @@ public class MethodRecording {
         Object replayInstance = targetClass.newInstance();
 
         JackboxAspect.setReplayingRecording(this);
-        Object replayedResult = getMethod().invoke(replayInstance, arguments);
+
+        Object replayedResult = null;
+        try {
+            replayedResult = getMethod().invoke(replayInstance, arguments);
+        }
+        catch (InvocationTargetException e) {
+        }
+
         JackboxAspect.clearReplayingRecording();
 
         if (!nullSafeEquals(replayedResult, getRecordedResult())) {

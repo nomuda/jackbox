@@ -46,7 +46,9 @@ public class JackboxAspect {
             "|| (execution(public * *(..)) && @within(no.muda.jackbox.annotations.Dependency))")
     public Object captureDependencies(ProceedingJoinPoint thisPointCut) throws Throwable {
         if (replayMode) {
-            return capturedValue(thisPointCut);
+            Throwable ex = capturedException(thisPointCut);
+            if (ex != null) throw ex;
+            else return capturedValue(thisPointCut);
         }
 
         MethodRecording methodRecording = createMethodRecording(thisPointCut);
@@ -63,11 +65,20 @@ public class JackboxAspect {
         }
     }
 
-    private Object capturedValue(ProceedingJoinPoint thisPointCut) {
-        DependencyRecording dependencyRecording = methodRecording.get().getDependencyRecording(thisPointCut.getSignature().getDeclaringType());
+    private Throwable capturedException(ProceedingJoinPoint thisPointCut) {
+        return dependencyRecording(thisPointCut).getExceptionThrown();
+    }
 
-        MethodRecording dependencyMethodRecording = dependencyRecording.getMethodRecordings(thisPointCut.getSignature().getName())[0];
+    private Object capturedValue(ProceedingJoinPoint thisPointCut) {
+        MethodRecording dependencyMethodRecording = dependencyRecording(thisPointCut);
+
         return dependencyMethodRecording.getRecordedResult();
+    }
+
+    private MethodRecording dependencyRecording(ProceedingJoinPoint thisPointCut) {
+        DependencyRecording dependencyRecording = methodRecording.get().getDependencyRecording(thisPointCut.getSignature().getDeclaringType());
+        MethodRecording dependencyMethodRecording = dependencyRecording.getMethodRecordings(thisPointCut.getSignature().getName())[0];
+        return dependencyMethodRecording;
     }
 
     @SuppressWarnings("unchecked")

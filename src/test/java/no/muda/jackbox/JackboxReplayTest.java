@@ -61,5 +61,19 @@ public class JackboxReplayTest {
         methodRecording.replay();
     }
 
+    @Test
+    public void shouldReplayDelegatedObjectThrowingExceptionThrough() throws Exception {
+        MethodRecording methodRecording = new MethodRecording(ExampleRecordedObject.class,
+                ExampleRecordedObject.class.getMethod("exampleMethodThatCallsExceptionThrowingMethodInDependency", boolean.class, boolean.class),
+                new Object[] {true, false});
+        methodRecording.setExceptionThrown(new IllegalArgumentException());
 
+        MethodRecording dependencyMethodRecording = new MethodRecording(ExampleDependency.class,
+                ExampleDependency.class.getMethod("methodThatThrowsException", boolean.class),
+                new Object[] {true});
+        dependencyMethodRecording.setExceptionThrown(new IllegalArgumentException());
+        methodRecording.addDependencyMethodCall(dependencyMethodRecording);
+
+        methodRecording.replay();
+    }
 }
