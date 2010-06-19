@@ -52,9 +52,15 @@ public class JackboxAspect {
         MethodRecording methodRecording = createMethodRecording(thisPointCut);
         ongoingRecording.get().addDependencyMethodCall(methodRecording);
 
-        Object result = thisPointCut.proceed();
-        methodRecording.setReturnValue(result);
-        return result;
+        try {
+            Object result = thisPointCut.proceed();
+            methodRecording.setReturnValue(result);
+            return result;
+        }
+        catch (Throwable t) {
+            methodRecording.setExceptionThrown(t);
+            throw t;
+        }
     }
 
     private Object capturedValue(ProceedingJoinPoint thisPointCut) {

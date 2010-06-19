@@ -18,6 +18,26 @@ public class ExampleRecordedObject {
         this.exampleDependency = exampleDependency;
     }
 
+    /**
+     * 
+     * @param throwException
+     * @param catchException
+     * @return true if exception was catched
+     */
+    @Recording
+    public boolean exampleMethodThatCallsExceptionThrowingMethodInDependency(boolean throwException, boolean catchException) {
+        try {
+            exampleDependency.methodThatThrowsException(throwException);
+            return false;
+        }
+        catch (IllegalArgumentException e) {
+            if (catchException) return true;
+            else {
+                throw e;
+            }
+        }
+    }
+
     @Recording
     public String exampleMethodThatDelegatesToDependency(String argument) {
         return exampleDependency.invokedMethodOnDependency(argument);

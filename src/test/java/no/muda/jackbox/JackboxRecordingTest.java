@@ -51,9 +51,7 @@ public class JackboxRecordingTest {
 
         MethodRecording recording = JackboxRecorder.getLastCompletedRecording();
 
-        assertThat(recording.getMethod().getName()).isEqualTo("methodThatThrowsException");
-        assertThat(recording.getArguments()).containsOnly(false);
-        assertThat(recording.getExceptionThrown()).isNull();
+        assertExceptionNotThrownRegisteredCorrect(recording);
     }
 
     @Test
@@ -65,12 +63,69 @@ public class JackboxRecordingTest {
         catch (IllegalArgumentException expected) {}
 
         MethodRecording recording = JackboxRecorder.getLastCompletedRecording();
+        assertExceptionThrowingRegistered(recording, "methodThatThrowsException");
+    }
 
-        assertThat(recording.getMethod().getName()).isEqualTo("methodThatThrowsException");
-        assertThat(recording.getArguments()).containsOnly(true);
+    @Test
+    public void shouldRecordDependencyCallThatCanThrowException() throws SecurityException, NoSuchMethodException {
+        ExampleDependency exampleDependency = new ExampleDependency();
+        recordedObject.setDependency(exampleDependency);
+
+        recordedObject.exampleMethodThatCallsExceptionThrowingMethodInDependency(false, false);
+
+        MethodRecording recording = JackboxRecorder.getLastCompletedRecording();
+        Method invokedMethodOnDependency = ExampleDependency.class.getMethod("methodThatThrowsException", boolean.class);
+        MethodRecording dependentRecording =
+            recording.getDependencyMethodRecordings(invokedMethodOnDependency)[0];
+        assertExceptionNotThrownRegisteredCorrect(dependentRecording);
+    }
+
+    @Test
+    public void shouldRecordDependencyCallThatThrowsException() throws SecurityException, NoSuchMethodException {
+        ExampleDependency exampleDependency = new ExampleDependency();
+        recordedObject.setDependency(exampleDependency);
+        recordedObject.exampleMethodThatCallsExceptionThrowingMethodInDependency(true, true);
+
+        MethodRecording recording = JackboxRecorder.getLastCompletedRecording();
+        Method invokedMethodOnDependency = ExampleDependency.class.getMethod("methodThatThrowsException", boolean.class);
+        MethodRecording dependentRecording =
+            recording.getDependencyMethodRecordings(invokedMethodOnDependency)[0];
+        assertExceptionThrowingRegistered(dependentRecording, "methodThatThrowsException");
+    }
+
+    @Test
+    public void shouldRecordDependencyCallThatThrowsExceptionThrough() throws SecurityException, NoSuchMethodException {
+        ExampleDependency exampleDependency = new ExampleDependency();
+        recordedObject.setDependency(exampleDependency);
+
+        try {
+            recordedObject.exampleMethodThatCallsExceptionThrowingMethodInDependency(true, false);
+            fail("Exception should have been thrown here.");
+        }
+        catch (IllegalArgumentException expected) {}
+
+        MethodRecording recording = JackboxRecorder.getLastCompletedRecording();
+        Method invokedMethodOnDependency = ExampleDependency.class.getMethod("methodThatThrowsException", boolean.class);
+        MethodRecording dependentRecording =
+            recording.getDependencyMethodRecordings(invokedMethodOnDependency)[0];
+        assertExceptionThrowingRegistered(dependentRecording, "methodThatThrowsException");
+
+        assertExceptionThrowingRegistered(recording, "exampleMethodThatCallsExceptionThrowingMethodInDependency");
+    }
+
+    private void assertExceptionThrowingRegistered(MethodRecording recording, String methodname) {
+        assertThat(recording.getMethod().getName()).isEqualTo(methodname);
+        assertThat(recording.getArguments()).contains(true);
         assertThat(recording.getRecordedResult())
             .describedAs("Should get null as return value when exception thrown").isNull();
         assertThat(recording.getExceptionThrown()).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    private void assertExceptionNotThrownRegisteredCorrect(
+            MethodRecording recording) {
+        assertThat(recording.getMethod().getName()).isEqualTo("methodThatThrowsException");
+        assertThat(recording.getArguments()).containsOnly(false);
+        assertThat(recording.getExceptionThrown()).isNull();
     }
 
     @Test
