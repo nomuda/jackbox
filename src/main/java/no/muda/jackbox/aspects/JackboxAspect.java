@@ -27,35 +27,58 @@ public class JackboxAspect {
             throw new IllegalStateException("Don't want to override " + ongoingRecording.get().getMethod());
         }
         ongoingRecording.set(recording);
-        Object result = thisPointCut.proceed();
+        try {
+            Object result = thisPointCut.proceed();
+            recording.setReturnValue(result);
+        }
+        catch (Throwable t) {
+            recording.setExceptionThrown(t);
+        }
         ongoingRecording.set(null);
 
-        recording.setReturnValue(result);
         JackboxRecorder.addRecording(recording);
 
-        return result;
+        if (recording.getExceptionThrown() != null) throw recording.getExceptionThrown();
+        else return recording.getRecordedResult();
     }
 
     @Around("call(@no.muda.jackbox.annotations.Dependency * *(..)) " +
             "|| (execution(public * *(..)) && @within(no.muda.jackbox.annotations.Dependency))")
     public Object captureDependencies(ProceedingJoinPoint thisPointCut) throws Throwable {
         if (replayMode) {
-            return capturedValue(thisPointCut);
+            Throwable ex = capturedException(thisPointCut);
+            if (ex != null) throw ex;
+            else return capturedValue(thisPointCut);
         }
 
         MethodRecording methodRecording = createMethodRecording(thisPointCut);
         ongoingRecording.get().addDependencyMethodCall(methodRecording);
 
-        Object result = thisPointCut.proceed();
-        methodRecording.setReturnValue(result);
-        return result;
+        try {
+            Object result = thisPointCut.proceed();
+            methodRecording.setReturnValue(result);
+            return result;
+        }
+        catch (Throwable t) {
+            methodRecording.setExceptionThrown(t);
+            throw t;
+        }
+    }
+
+    private Throwable capturedException(ProceedingJoinPoint thisPointCut) {
+        return dependencyRecording(thisPointCut).getExceptionThrown();
     }
 
     private Object capturedValue(ProceedingJoinPoint thisPointCut) {
-        DependencyRecording dependencyRecording = methodRecording.get().getDependencyRecording(thisPointCut.getSignature().getDeclaringType());
+        MethodRecording dependencyMethodRecording = dependencyRecording(thisPointCut);
 
-        MethodRecording dependencyMethodRecording = dependencyRecording.getMethodRecordings(thisPointCut.getSignature().getName())[0];
         return dependencyMethodRecording.getRecordedResult();
+    }
+
+    private MethodRecording dependencyRecording(ProceedingJoinPoint thisPointCut) {
+        DependencyRecording dependencyRecording = methodRecording.get().getDependencyRecording(thisPointCut.getSignature().getDeclaringType());
+        MethodRecording dependencyMethodRecording = dependencyRecording.getMethodRecordings(thisPointCut.getSignature().getName())[0];
+        return dependencyMethodRecording;
     }
 
     @SuppressWarnings("unchecked")

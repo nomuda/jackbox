@@ -1,7 +1,6 @@
 package no.muda.jackbox;
 
-import no.muda.jackbox.aspects.JackboxAspect;
-
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+
+import no.muda.jackbox.aspects.JackboxAspect;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -21,6 +22,7 @@ public class MethodRecording {
            = new HashMap<Class<?>, DependencyRecording>();
     private final Class<?> targetClass;
     private final Method method;
+    private Throwable exceptionThrown;
 
     public MethodRecording(Class<?> klass, Method method, Object[] arguments) {
         this.targetClass = klass;
@@ -62,10 +64,31 @@ public class MethodRecording {
         Object replayInstance = targetClass.newInstance();
 
         JackboxAspect.setReplayingRecording(this);
-        Object replayedResult = getMethod().invoke(replayInstance, arguments);
+
+        boolean gotException = false;
+        Object replayedResult = null;
+        try {
+            replayedResult = getMethod().invoke(replayInstance, arguments);
+        }
+        catch (InvocationTargetException e) {
+            if (getExceptionThrown() == null
+                    || getExceptionThrown().getClass() != e.getCause().getClass()) {
+                String expected = (getExceptionThrown() == null) ?
+                        "no exception" : getExceptionThrown().getClass().getName();
+                throw new AssertionError("When replaying " + getMethod()
+                        + " expected throwing of <" + expected + "> got <" +
+                        e.getCause().getClass().getName() + ">");
+            }
+            gotException = true;
+        }
+
         JackboxAspect.clearReplayingRecording();
 
-        if (!nullSafeEquals(replayedResult, getRecordedResult())) {
+        if (getExceptionThrown() != null && !gotException) {
+             throw new AssertionError("When replaying " + getMethod()
+                        + " expected throwing of <" + getExceptionThrown() + ">, got no exception thrown");
+        }
+        else if (!nullSafeEquals(replayedResult, getRecordedResult())) {
             throw new AssertionError("When replaying " + getMethod()
                     + " expected <" + getRecordedResult() + "> got <" +
                     replayedResult + ">");
@@ -99,7 +122,10 @@ public class MethodRecording {
         return ArrayUtils.isEquals(arguments, other.arguments) &&
             nullSafeEquals(targetClass, other.targetClass) &&
             nullSafeEquals(method, other.method) &&
-            ArrayUtils.isEquals(returnValue, other.returnValue);
+            ArrayUtils.isEquals(returnValue, other.returnValue) &&
+            (getExceptionThrown() == null ||
+            nullSafeEquals(getExceptionThrown().getClass(), other.getExceptionThrown().getClass()));
+            //nullSafeEquals(getExceptionThrown(), other.getExceptionThrown());
     }
 
     private<T> boolean nullSafeEquals(T a, T b) {
@@ -126,6 +152,14 @@ public class MethodRecording {
             }
         }
         return result;
+    }
+
+    public Throwable getExceptionThrown() {
+        return exceptionThrown;
+    }
+
+    public void setExceptionThrown(Throwable t) {
+        exceptionThrown = t;
     }
 
 }

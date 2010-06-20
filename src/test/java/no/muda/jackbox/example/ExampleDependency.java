@@ -12,4 +12,9 @@ public class ExampleDependency {
     @Dependency
     public void anotherTestMethodWithoutArgumentsOrReturnValue() {
     }
+
+    @Dependency
+    public void methodThatThrowsException(boolean throwException) throws IllegalArgumentException {
+        if (throwException) throw new IllegalArgumentException("Was told to throw exception");
+    }
 }

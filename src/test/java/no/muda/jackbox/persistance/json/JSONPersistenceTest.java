@@ -119,6 +119,18 @@ public class JSONPersistenceTest {
     }
 
     @Test
+    public void shouldPersistExceptionThrown() throws Exception {
+        MethodRecording recording = new MethodRecording(
+        ExampleRecordedObject.class,
+        ExampleRecordedObject.class.getMethod("methodThatThrowsException", new Class[]{boolean.class}),
+          new Object[] {true});
+        recording.setExceptionThrown(new IllegalArgumentException());
+
+        MethodRecording readRecording = persistAndRestore(recording);
+        assertThat(readRecording).isEqualTo(recording);
+    }
+
+    @Test
     public void shouldSerializeDependencies() throws Exception {
         String recordedReturnValueFromDependencyMethod = "ABCD";
 
