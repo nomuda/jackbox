@@ -47,10 +47,17 @@ class MethodRecordingTypeAdaptor implements JsonSerializer<MethodRecording>,
         obj.add("method", context.serialize(src.getMethod()));
         obj.add("arguments", context.serialize(Arrays
                 .asList(src.getArguments())));
-        if (src.getMethod().getReturnType() != Void.TYPE) {
+
+        if (src.getExceptionThrown() != null) {
+            Class<? extends Throwable> exceptionClass = IllegalArgumentException.class; // src.getExceptionThrown().getClass()
+            obj.addProperty("thrownexceptionclass", exceptionClass.getCanonicalName());
+//            obj.add("thrownexception", context.serialize(src.getExceptionThrown(), exceptionClass));
+        }
+        else if (src.getMethod().getReturnType() != Void.TYPE) {
             obj.add("returnvalue", context.serialize(src.getRecordedResult(),
                     src.getMethod().getGenericReturnType()));
         }
+
         obj.add("dependencies", context.serialize(src
                 .getDependencyMethodRecordings()));
 
@@ -65,11 +72,34 @@ class MethodRecordingTypeAdaptor implements JsonSerializer<MethodRecording>,
         Method method = context.deserialize(obj.get("method"), Method.class);
 
         Object returnValue;
-        if (method.getReturnType() != Void.TYPE) {
-            returnValue = context.deserialize(obj.get("returnvalue"), method
-                    .getGenericReturnType());
-        } else
+        Throwable exceptionThrown;
+
+        JsonElement exceptionClassElement = obj.get("thrownexceptionclass");
+        if (exceptionClassElement != null) {
+            Class<? extends Throwable> exceptionClass;
+            try {
+                exceptionClass = (Class<? extends Throwable>) Class.forName(exceptionClassElement.getAsString());
+            } catch (ClassNotFoundException e) {
+                throw new JsonParseException(e);
+            }
+  //          exceptionThrown = context.deserialize(obj.get("thrownexception"), exceptionClass);
+            try {
+                exceptionThrown = exceptionClass.newInstance();
+            } catch (InstantiationException e) {
+                throw new JsonParseException(e);
+            } catch (IllegalAccessException e) {
+                throw new JsonParseException(e);
+            }
             returnValue = null;
+        }
+        else {
+            exceptionThrown = null;
+            if (method.getReturnType() != Void.TYPE) {
+                returnValue = context.deserialize(obj.get("returnvalue"), method
+                        .getGenericReturnType());
+            } else
+            returnValue = null;
+        }
 
         JsonArray jsonArguments = (JsonArray) obj.get("arguments");
         Object[] arguments = new Object[method.getParameterTypes().length];
@@ -81,6 +111,7 @@ class MethodRecordingTypeAdaptor implements JsonSerializer<MethodRecording>,
         MethodRecording methodRecording = new MethodRecording(clazz, method,
                 arguments);
         methodRecording.setReturnValue(returnValue);
+        methodRecording.setExceptionThrown(exceptionThrown);
 
         JsonArray jsonArray = (JsonArray) obj.get("dependencies");
         for (JsonElement dependencyMethodRecording : jsonArray) {
