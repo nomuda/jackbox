@@ -2,7 +2,7 @@ package no.muda.jackbox.example.classannotation;
 
 import no.muda.jackbox.JackboxRecorder;
 import no.muda.jackbox.MethodRecording;
-import no.muda.jackbox.persistance.json.JSONPersister;
+import no.muda.jackbox.persistence.json.JSONPersister;
 import org.junit.Before;
 import org.junit.Test;
 

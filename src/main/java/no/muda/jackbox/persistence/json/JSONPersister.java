@@ -1,4 +1,4 @@
-package no.muda.jackbox.persistance.json;
+package no.muda.jackbox.persistence.json;
 
 import java.io.Reader;
 import java.lang.reflect.Method;

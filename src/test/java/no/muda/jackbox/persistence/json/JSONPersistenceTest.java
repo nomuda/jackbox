@@ -1,4 +1,4 @@
-package no.muda.jackbox.persistance.json;
+package no.muda.jackbox.persistence.json;
 
 import no.muda.jackbox.MethodRecording;
 import no.muda.jackbox.example.Entity;
