@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>no.muda</groupId>
+    <groupId>jackbox</groupId>
     <artifactId>jackbox</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
@@ -11,6 +11,10 @@
         <connection>scm:git:git@github.com:oc/jackbox.git</connection>
         <developerConnection>scm:git:git@github.com:oc/jackbox.git</developerConnection>
     </scm>
+
+    <properties>
+        <aspectj.version>1.6.9</aspectj.version>
+    </properties>    
 
     <dependencies>
         <dependency>
@@ -24,6 +28,16 @@
             <version>${aspectj.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>1.4</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.5</version>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.8.1</version>
@@ -35,19 +49,6 @@
             <version>1.2</version>
             <scope>test</scope>
         </dependency>
-
-      <dependency>
-          <groupId>com.google.code.gson</groupId>
-          <artifactId>gson</artifactId>
-          <version>1.3</version>
-      </dependency>
-
-      <dependency>
-	<groupId>commons-lang</groupId>
-	<artifactId>commons-lang</artifactId>
-	<version>2.5</version>
-      </dependency>
-
     </dependencies>
 
     <build>
@@ -64,26 +65,24 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <argLine>-javaagent:${user.home}/.m2/repository/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar</argLine>
+                    <argLine>
+                        -javaagent:${user.home}/.m2/repository/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar
+                    </argLine>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-    
-    <properties>
-        <aspectj.version>1.6.8</aspectj.version>
-    </properties>
 
     <repositories>
-      <repository>
-	<id>gson</id>
-	<url>http://google-gson.googlecode.com/svn/mavenrepo</url>
-	<snapshots>
-          <enabled>true</enabled>
-	</snapshots>
-	<releases>
-          <enabled>true</enabled>
-	</releases>
-      </repository>
+        <repository>
+            <id>gson</id>
+            <url>http://google-gson.googlecode.com/svn/mavenrepo</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
     </repositories>
 </project>
