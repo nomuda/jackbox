@@ -1,7 +1,7 @@
 <aspectj>
 
     <aspects>
-        <aspect name="no.muda.jackbox.aspects.JackboxAspect"/>
+        <aspect name="jackbox.aspects.JackboxAspect"/>
     </aspects>
     
 </aspectj>
