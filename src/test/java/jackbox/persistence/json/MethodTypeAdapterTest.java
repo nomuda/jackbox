@@ -1,55 +1,45 @@
 package jackbox.persistence.json;
 
-import java.lang.reflect.Method;
-
-import org.junit.Test;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.lang.reflect.Method;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 public class MethodTypeAdapterTest {
-    @Test
-    public void testSerializeWithoutAdapterImpossible() {
-        Method testMethod = getTestMethod();
-
-        Gson gson = new Gson();
-        try {
-            gson.toJson(testMethod, Method.class);
-            fail("Serializing without adapter should give exception (else adaptor no longer needeed");
-        }
-        catch (Exception expected) {
-        }
-    }
-
-    private Method getTestMethod() {
-        Method testMethod = getClass().getMethods()[0];
-        return testMethod;
-    }
+    private Method testMethod;
+    private Gson gsonWithAdapter;
 
     @Test
     public void testSerialize() {
-        Method testMethod = getTestMethod();
-        Gson gson = getGsonWithAdapter();
-
-        String result = gson.toJson(testMethod);
-        assertThat(result).contains(testMethod.getName());
-    }
-
-    private Gson getGsonWithAdapter() {
-        Gson gson = new GsonBuilder().registerTypeAdapter(Method.class, new MethodTypeAdapter()).create();
-        return gson;
+        assertThat(gsonWithAdapter.toJson(testMethod)).contains(testMethod.getName());
     }
 
     @Test
     public void testSerializeAndDeserialize() {
-        Method testMethod = getTestMethod();
-        Gson gson = getGsonWithAdapter();
-
-        String result = gson.toJson(testMethod);
-        Method parsedMethod = gson.fromJson(result, Method.class);
+        Method parsedMethod = gsonWithAdapter.fromJson(gsonWithAdapter.toJson(testMethod), Method.class);
         assertThat(parsedMethod).isEqualTo(testMethod);
     }
+
+    @Test
+    public void testDeserializeWithoutAdapterImpossible() {
+        Gson gson = new Gson();
+        String serialized = gson.toJson(testMethod);
+        try {
+            gson.fromJson(serialized, Method.class);
+            fail("Deserializing without adapter should give exception (else adaptor no longer needeed\"");
+        } catch (Exception e) {
+        }
+    }
+
+    @Before
+    public void initTestMethod() {
+        testMethod = getClass().getMethods()[0];
+        gsonWithAdapter = new GsonBuilder().registerTypeAdapter(Method.class, new MethodTypeAdapter()).create();
+    }
+
 }
